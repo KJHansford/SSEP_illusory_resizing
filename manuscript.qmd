@@ -54,17 +54,17 @@ if (processdata==1){
 
 if (processdata==1){
     for (subj in 1:48){
-    if (!dir.exists('local/EEG Data/P',subj)){dir.create('local/EEG Data/P',subj)}
+    if (!dir.exists(paste0('local/EEG Data/P',subj))){dir.create(paste0('local/EEG Data/P',subj))}
   }
   osfproject <- osf_retrieve_node("xc8jq")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   for (subj in 1:48){
-    if (!file.exists('local/EEG Data/P',subj,'/P',subj,'_block1_EEG.fdt')){
-    fid <- which(osffiles$name=='P',subj,'_block1_EEG.fdt')
+    if (!file.exists(paste0('local/EEG Data/P',subj,'/P',subj,'_block1_EEG.fdt'))){
+    fid <- which(osffiles$name==paste0('P',subj,'_block1_EEG.fdt'))
     osf_download(osffiles[fid,], path=paste0('local/EEG Data/P',subj),progress=TRUE)
     }
-    if (!file.exists('local/EEG Data/P',subj,'/P',subj,'_block1_EEG.set')){
-    fid <- which(osffiles$name=='P',subj,'_block1_EEG.set')
+    if (!file.exists(paste0('local/EEG Data/P',subj,'/P',subj,'_block1_EEG.set'))){
+    fid <- which(osffiles$name==paste0('P',subj,'_block1_EEG.set'))
     osf_download(osffiles[fid,], path=paste0('local/EEG Data/P',subj),progress=TRUE)
 }}}
 
