@@ -19,7 +19,7 @@ format:
 
 ```{r setup, include=FALSE}
 
-processdata <- 1
+processdata <- 0
 # the processdata flag has two levels:
 # 0 - just produce the manuscript and all analyses and figures from processed EEG data
 # 1 - do all analyses from scratch using the raw EEG data
@@ -38,7 +38,7 @@ invisible(lapply(toinstall,library,character.only=TRUE))
 # if (processdata==1){
   install_miniconda()
   use_miniconda('r-reticulate')
-  install_python(version="3.10")
+  # install_python(version="3.10")
   py_install(c('mne', 'numpy', 'scikit-learn', 'matplotlib', 'pandas', 'openpyxl'))
 # }
 
