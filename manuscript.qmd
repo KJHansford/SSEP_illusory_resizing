@@ -53,32 +53,21 @@ if (processdata==1){
 }
 
 if (processdata==1){
-  for (subj in 1:48){
+    for (subj in 1:48){
     if (!dir.exists('local/EEG Data/P',subj)){dir.create('local/EEG Data/P',subj)}
   }
-}
-
-if (processdata==1){
+  osfproject <- osf_retrieve_node("xc8jq")
+  osffiles <- osf_ls_files(osfproject)
   for (subj in 1:48){
     if (!file.exists('local/EEG Data/P',subj,'/P',subj,'_block1_EEG.fdt')){
-    osfproject <- osf_retrieve_node("xc8jq")
-    osffiles <- osf_ls_files(osfproject)
     fid <- which(osffiles$name=='P',subj,'_block1_EEG.fdt')
-    osf_download(osffiles[fid,], path='local/EEG Data/P',subj,progress=TRUE)
-}
-}
-}
-
-if (processdata==1){
-  for (subj in 1:48){
+    osf_download(osffiles[fid,], path=paste0('local/EEG Data/P',subj),progress=TRUE)
+    }
     if (!file.exists('local/EEG Data/P',subj,'/P',subj,'_block1_EEG.set')){
-    osfproject <- osf_retrieve_node("xc8jq")
-    osffiles <- osf_ls_files(osfproject)
     fid <- which(osffiles$name=='P',subj,'_block1_EEG.set')
-    osf_download(osffiles[fid,], path='local/EEG Data/P',subj,progress=TRUE)
-}
-}
-}
+    osf_download(osffiles[fid,], path=paste0('local/EEG Data/P',subj),progress=TRUE)
+}}}
+
 
 if (!file.exists('local/subjective data.csv')){
   osfproject <- osf_retrieve_node("edqf5")
