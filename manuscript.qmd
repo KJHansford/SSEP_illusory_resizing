@@ -1407,7 +1407,7 @@ Hypothesis 2: A priori power analysis using G\*Power showed that for a repeated 
 Hypotheses 2a – 2c: A priori power analysis using G\*Power shows that for a two-tailed difference between 2 means (pairwise) t test, with an effect size of dz = .5, alpha of 0.016 (corrected for multiple comparisons), power at 80%, a total sample size of 46 participants was needed.
 
 
-The stage 1 report for this study, with details regarding planned analyses, pilot data, and a Design planner (Table A1) encompassing research questions, hypotheses, sampling and analysis plans and their resulting interpretations can be seen at the following OSF page: https://osf.io/pfksu/. 
+The stage 1 report for this study, with details regarding planned analyses, pilot data, and a Design planner (Table A1) encompassing research questions, hypotheses, sampling and analysis plans and their resulting interpretations can be seen at the following OSF page: https://osf.io/pfksu/. All data and code to reproduce the analyses can be found at the following OSF page:  https://osf.io/yhz6j/. 
 
 
 # Results
