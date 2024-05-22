@@ -35,12 +35,12 @@ invisible(lapply(toinstall,library,character.only=TRUE))
 # if (!is_tinytex()){install_tinytex()}
 
 # create python environment and install packages
-# if (processdata==1){
+  if (processdata==1){
   install_miniconda()
   use_miniconda('r-reticulate')
   # install_python(version="3.10")
   py_install(c('mne', 'numpy', 'scikit-learn', 'matplotlib', 'pandas', 'openpyxl'))
-# }
+  }
 
 # check for local files and directories and create/download if missing
 if (!dir.exists('local')){dir.create('local')}
@@ -1407,7 +1407,9 @@ Hypothesis 2: A priori power analysis using G\*Power showed that for a repeated 
 Hypotheses 2a – 2c: A priori power analysis using G\*Power shows that for a two-tailed difference between 2 means (pairwise) t test, with an effect size of dz = .5, alpha of 0.016 (corrected for multiple comparisons), power at 80%, a total sample size of 46 participants was needed.
 
 
-The stage 1 report for this study, with details regarding planned analyses, pilot data, and a Design planner (Table A1) encompassing research questions, hypotheses, sampling and analysis plans and their resulting interpretations can be seen at the following OSF page: https://osf.io/pfksu/. All data and code to reproduce the analyses can be found at the following OSF page:  https://osf.io/yhz6j/. 
+The stage 1 report for this study, with details regarding planned analyses and pilot data, can be seen at the following OSF page: https://osf.io/pfksu/ . All data and code to reproduce the analyses can be found at the following OSF page:  https://osf.io/yhz6j/. A design planner encompassing research questions, hypotheses, sampling and analysis plans and their resulting interpretations and observed outcomes can be seen in Figure 3.
+
+![Design Planner](Figures/designplanner.pdf){#fig-designplanner}
 
 
 # Results
@@ -1468,6 +1470,22 @@ The present study enhances our understanding of the cortical changes associated 
 Pilot data regarding the experience of the illusion for healthy participants undergoing synchronous and asynchronous illusory resizing of the index finger can be seen in Figure A1. 9 participants had either synchronous or asynchronous multimodal manipulations delivered first in a random order, and were then given the other condition, after which all participants were given an illusion scale. Findings showed that across all participants, no significant difference in illusion experience between the synchronous and asynchronous conditions, t(8) = 1.877, p = 0.097, however as can be seen in figure A1, despite the small sample size, illusion strength was seen to be greater in the synchronous condition compared to the asynchronous condition.
 
 ![Pilot data from Healthy Participants Undergoing Synchronous and Asynchronous Illusory Finger Resizing.](Figures/Pilot Data.png){#fig-pilot}
+{{< pagebreak >}}
+
+Previous literature stated that the ideal vibration frequency to use to elicit somatosensory SSEPs is approximately 26Hz (Muller et al., 2001; Breitweiser et al., 2016; Pokorny et al., 2016; Snyder, 1992).  Due to resizing illusions often manipulating the index finger, and previous studies using the index finger supporting around 26Hz as an optimal frequency (Muller et al., 2001; Breitweiser et al., 2016; Pokorny et al., 2016), it was hypothesised that 26Hz would elicit a dependable somatosensory SSEP response. Therefore, we ran a pilot study to check that our setup and equipment can reliably elicit and record a somatosensory SSEP at 26Hz, using the resizing illusion and EEG.
+
+Pilot data were collected for 3 healthy participants. Participants underwent the same experimental protocol as mentioned in the “Experimental Procedure” section, minus the subjective illusory experience questionnaire. A Fourier transform was calculated for each waveform at each electrode for all conditions, and then averaged across repetition to obtain individual results. These were then averaged across all 3 participants to give the result seen in Figure 8. 
+
+As can be seen in Figure 8, there was a clear somatosensory SSEP response at 26Hz, which was strongest around electrodes F1 and FC1. Previous research using vibrotactile stimulation at 21Hz have also found the scalp topography of the activation to be most pronounced over mid-frontal distributions (Porcu et al., 2014; Timora & Budd, 2018), in line with the scalp topography seen here. Given these finding of a distinct 26Hz signal and mid-frontal scalp location, it appeared appropriate for 26Hz to be used as the vibration frequency in the current study. 
+
+![Averaged Pilot Data showing peak frequency at 26Hz, centred between electrodes F1 and FC1. The spectrum is derived from electrode FC1. Saturation bar represents signal to noise ratio (SNR).](Figures/Pilot Data 2.png){width=50%, height=50%}
+
+{{< pagebreak >}}
+
+Pilot data were also collected using the vibrotactile stimulator at 26Hz to make sure that the illusory experience is not affected by the addition of vibrotactile input. Pilot data were collected from 4 additional healthy participants, who underwent the same experimental protocol as mentioned in the “Experimental Procedure” section, but without EEG caps fitted. Illusory experience was calculated using the median of both illusion scores for each participant minus their median control scores, as per the preprocessing steps regarding the control index, and then the data were averaged over participants to give the results seen in Figure 9. As can be seen, there is a greater subjective experience of the resizing illusion, indexed by participant’s illusion score, in both experimental conditions (UV average = 64.25; MS average = 67.88) compared to both control conditions (NI average = 32.38; NIT average = 24.13). Scores below 50 are indicative of disagreement of experience of the illusion, whilst a score of 50 is a neutral option regarding the illusion experience, and scores above 50 are indicative of agreement of experiencing the illusion. This therefore shows that the experience of illusory resizing was maintained when vibrotactile stimulation was added to the procedure and can therefore be used in the current study to elicit somatosensory SSEPs without affecting the subjective illusory experience of the resizing illusion. 
+
+![Averaged Illusion score for each condition. Error bars represent standard errors. NI represents the non-Illusion condition, NIT refers to the non-illusion tactile condition, UV refers to the unimodal-visual condition, and MS refers to the multisensory condition.](Figures/Pilot Data 3.png){#fig-pilot3}
+
 {{< pagebreak >}}
 
 Exploratory analyses of the subjective disownership data using a Friedman test found a significant overall effect of condition with a small effect size ($\chi^2$(`r round(res.fried_disownership$df[1],digits = 2)`) = `r round(res.fried_disownership$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_disownership$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_disownership$effsize[1],digits = 2)`) and post hoc Wilcoxon tests with Holm corrections found significantly greater combined disownership score in the UV condition (M = `r round(disownershipmsds$median[4],digits = 2)`, SD = `r round(disownershipmsds$sd[4],digits = 2)`) compared to the NI (M = `r round(disownershipmsds$median[1],digits = 2)`, SD = `r round(disownershipmsds$sd[1],digits = 2)`, *p* = `r format.pval(nppwc_disownership$p.adj[3], digits = 1, eps = 0.001, nsmall = 3)`), NIT (M = `r round(disownershipmsds$median[2],digits = 2)`, SD = `r round(disownershipmsds$sd[2],digits = 2)`, *p* = `r format.pval(nppwc_disownership$p.adj[5], digits = 1, eps = 0.001, nsmall = 3)`), and MS conditions, (M = `r round(disownershipmsds$median[3],digits = 2)`, SD = `r round(disownershipmsds$sd[3],digits = 2)`, *p* = `r format.pval(nppwc_disownership$p.adj[6], digits = 1, eps = 0.001, nsmall = 3)`).
