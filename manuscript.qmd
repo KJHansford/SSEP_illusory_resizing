@@ -1427,8 +1427,8 @@ Hypotheses 2a – 2c: A priori power analysis using G\*Power shows that for a tw
 
 The stage 1 report for this study, with details regarding planned analyses and pilot data, can be seen at the following OSF page: https://osf.io/pfksu/ . All data and code to reproduce the analyses can be found at the following OSF page:  https://osf.io/yhz6j/. A design planner encompassing research questions, hypotheses, sampling and analysis plans and their resulting interpretations and observed outcomes can be seen in Figure 3.
 
-![Design Planner](Figures/designplanner.pdf){#fig-designplanner}
 
+![Design Planner](Figures/designplanner.pdf){#fig-designplanner}
 
 # Results
 
@@ -1485,7 +1485,7 @@ The present study enhances our understanding of the cortical changes associated 
 
 # Appendix 
 
-Pilot data regarding the experience of the illusion for healthy participants undergoing synchronous and asynchronous illusory resizing of the index finger can be seen in Figure A1. 9 participants had either synchronous or asynchronous multimodal manipulations delivered first in a random order, and were then given the other condition, after which all participants were given an illusion scale. Findings showed that across all participants, no significant difference in illusion experience between the synchronous and asynchronous conditions, t(8) = 1.877, p = 0.097, however as can be seen in figure A1, despite the small sample size, illusion strength was seen to be greater in the synchronous condition compared to the asynchronous condition.
+Pilot data regarding the experience of the illusion for healthy participants undergoing synchronous and asynchronous illusory resizing of the index finger can be seen in Figure 7. 9 participants had either synchronous or asynchronous multimodal manipulations delivered first in a random order, and were then given the other condition, after which all participants were given an illusion scale. Findings showed that across all participants, no significant difference in illusion experience between the synchronous and asynchronous conditions, t(8) = 1.877, p = 0.097, however as can be seen in figure A1, despite the small sample size, illusion strength was seen to be greater in the synchronous condition compared to the asynchronous condition.
 
 ![Pilot data from Healthy Participants Undergoing Synchronous and Asynchronous Illusory Finger Resizing.](Figures/Pilot Data.png){#fig-pilot}
 {{< pagebreak >}}
