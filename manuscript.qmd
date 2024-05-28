@@ -1388,6 +1388,24 @@ EEG data were first converted using MATLAB and EEGlab from the ANT EEprobe .cnt 
 
 Regarding questionnaire data, scores for both illusion experience questions were combined to give median scores, along with both disownership questions and both control questions, resulting in 3 median scores per condition per participant. The median control scores were used to create an index of the illusion and disownership scores by subtracting the median control score from the median illusion and median disownership scores, in line with previous research doing similarly [@matsumiya2021a; @kilteni2017a; @kalckert2012a]. The normalised (baseline corrected) data were used for analyses, with a new scale from -100 to +100 with 100 indicating strongly agree, 50 indicating a neutral opinion, and scores below 0 indicating strongly disagree with the statements on the questionnaire. 50 is maintained as a neutral opinion so that the normalised data still adhered to the thresholds that the participants were presented with during the experiment. 
 
+## Planned Analyses
+
+### Hypothesis 1 (Positive Control)
+
+*(1 – Positive Control) There will be a greater illusory experience, measured via a subjective illusory experience questionnaire, in the (1a) MS condition compared to the NI condition and in the (1b) MS condition compared to the NIT condition.* 
+
+The subjective illusory experience questionnaire was  used as a positive control for the current study. Previous research has shown significantly greater illusion strength for MS conditions compared to non-illusion conditions (Carey et al., 2019; Hansford et al., 2023a), which we attempted to replicate. Questionnaire data were be analysed using R (R Core Team, 2021). A one-way ANOVA (or non-parametric equivalent)would be run to compare the dependent variable of normalised (baseline corrected) illusion score from each independent condition. Given significant findings, post-hoc tests would be run, with Bonferroni correction for 2 comparisons (MS Vs NI, MS Vs NIT) at an initial alpha of 0.05. 
+
+Interpretations for hypothesis 1 can be found in the design table (Table 1). 
+
+### Hypothesis 2
+
+*There will be a significant difference in SSEP response across the electrodes of interest (F1 & FC1) when comparing (2a) the MS condition to the NI condition, when comparing (2b) the UV condition to the NI condition, but (2c) that there will be no significant difference when comparing the NIT condition to the NI condition.*
+
+As mentioned in the EEG pre-processing steps in section 2.4.1, analysis of EEG data involved taking a Fourier transform for each waveform averaged across the electrodes of interest, to obtain the amplitude for each trial at the vibration frequency (26Hz). These amplitudes would then be averaged across trials to give overall results for each participant, before running a repeated measures one way ANOVA (or non-parametric equivalent) comparing SSEP response from each experimental condition. The dependent variable would be SSEP amplitude in µV, whilst the independent variable would be the different manipulations given in each comparison condition. Given significant findings in the ANOVA, post hoc comparisons of every condition would be conducted at a new alpha of .016 (corrected for 3 comparisons (MS Vs NI, MS Vs UV, UV Vs NI)). Based on the pilot data in Appendix A, we expected to see activation most pronounced over mid-frontal distributions, covering F1 and FC1 electrodes and therefore these electrodes were selected as the electrodes of interest. 
+
+Interpretations for hypothesis 2 can be found in the design table (Table 1). 
+
 ## Power analysis
 
 ### Hypothesis 1 (Positive Control)
