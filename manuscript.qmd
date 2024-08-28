@@ -1,5 +1,5 @@
 ---
-title: "Somatosensory Response Changes During Illusory Finger Stretching"
+title: "Illusory Finger Stretching and Somatosensory Responses"
 author: ""
 bibliography: references-rr.bib
 #csl: elife.csl
@@ -26,7 +26,7 @@ processdata <- 0
 
 
 # install R packages
-packagelist <- c('tidyverse','ggpubr','ez','ggplot2','jpeg','grid','plotrix','lavaan', 'cowplot', 'ggpubr','rstatix','reticulate','moments','tiff','rmarkdown','tinytex','osfr')  
+packagelist <- c('tidyverse','ggpubr','ez','ggplot2','jpeg','grid','plotrix','lavaan', 'cowplot', 'ggpubr','rstatix','reticulate','moments','tiff','rmarkdown','tinytex','osfr','FSA')  
 missingpackages <- packagelist[!packagelist %in% installed.packages()[,1]]
 if (length(missingpackages)>0){install.packages(missingpackages)}
 toinstall <- packagelist[which(!packagelist %in% (.packages()))]
@@ -657,6 +657,7 @@ pdf('Figures/eegdata1.pdf', width = 12, height = 11)
   geom_violin(trim = FALSE) + 
   geom_violin(aes(color = Condition), trim = FALSE) + 
   geom_boxplot(width = 0.2, outlier.shape = NA, color = "black")+
+  stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="black", fill="black") +
   geom_dotplot(binaxis = "y",
                stackdir = "center",
                dotsize = 0.5,
@@ -672,7 +673,7 @@ pdf('Figures/eegdata1.pdf', width = 12, height = 11)
                                                                #c("UV.Illusion.Median","MS.Illusion.Median")),
               #map_signif_level = TRUE,annotations="***",y_position = c(115,135,145))+
   scale_color_manual(values = c("cornflowerblue", "cornflowerblue","cornflowerblue", "cornflowerblue"))+
-  theme(legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
+  theme(axis.text.x = element_text(size = 20), axis.text.y = element_text(size = 20),axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
 dev.off()
 
 pdf('Figures/eegdata2.pdf', width = 12, height = 11)
@@ -681,6 +682,7 @@ pdf('Figures/eegdata2.pdf', width = 12, height = 11)
   geom_violin(trim = FALSE) + 
   geom_violin(aes(color = Condition), trim = FALSE) + 
   geom_boxplot(width = 0.2, outlier.shape = NA, color = "black")+
+  stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="black", fill="black") +
   geom_dotplot(binaxis = "y",
                stackdir = "center",
                dotsize = 0.5,
@@ -696,7 +698,7 @@ pdf('Figures/eegdata2.pdf', width = 12, height = 11)
                                                                #c("UV.Illusion.Median","MS.Illusion.Median")),
               #map_signif_level = TRUE,annotations="***",y_position = c(115,135,145))+
   scale_color_manual(values = c("cornflowerblue", "cornflowerblue","cornflowerblue", "cornflowerblue"))+
-  theme(legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
+  theme(axis.text.x = element_text(size = 20), axis.text.y = element_text(size = 20),axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
 dev.off()
 
 #assumption check
@@ -715,6 +717,7 @@ eegdatamsds <- group_by(eegdata_2, Condition) %>%
   summarise(
     count = n(),
     median = median(Amplitude, na.rm = TRUE),
+    mean = mean(Amplitude, na.rm = TRUE),
     sd = sd(Amplitude, na.rm = TRUE)
   )
 
@@ -726,16 +729,17 @@ eegdatamsds2 <- group_by(eegdata_exp2, Condition) %>%
   )
 
 #run one way RMANOVA for illusion data
-#res.aov4 <- anova_test(data = eegdata_2, dv = Amplitude, wid = PID, within = Condition)
-#get_anova_table(res.aov4)
+res.aov4 <- anova_test(data = eegdata_2, dv = Amplitude, wid = PID, within = Condition, effect.size = "pes")
+get_anova_table(res.aov4)
 
 #posthoc tests
-# pwc4 <- eegdata_2 %>%
-# pairwise_t_test(
-# Amplitude ~ Condition, paired = TRUE,
-# p.adjust.method = "bonferroni"
-# )
-# pwc4
+pwc4 <- eegdata_2 %>%
+pairwise_t_test(
+  Amplitude ~ Condition, paired = TRUE,
+  p.adjust.method = "bonferroni",
+  detailed = TRUE
+)
+pwc4
 
 #non-parametric test
 res.fried_eeg1 <- eegdata_2 %>% friedman_test(Amplitude ~ Condition |PID)
@@ -746,10 +750,12 @@ effectsize_eeg2 <- eegdata_exp2 %>% friedman_effsize(Amplitude ~ Condition |PID)
 
 #posthoc tests
 nppwc_eeg1 <- eegdata_2 %>%
-  wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm")
+  wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
+    detailed = TRUE)
 
 nppwc2_eeg2 <- eegdata_exp2 %>%
-  wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm")
+  wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
+    detailed = TRUE)
 
 ```
 
@@ -894,9 +900,14 @@ lines(montage$RearX,montage$RearY,col="black",lwd=2)
 dev.off()
 }
 
+#for individual plots uncomment next line
+#for (subj in 1:46){
 
 #create spectra plots
+#for individual plots comment next line
 pdf(paste0(figdir,"/spectrum1.pdf"), width=12, height=12)
+#for individual plots uncomment next line
+#pdf(paste0(figdir,"/spectrum",subj,".pdf"), width=12, height=12)
 par(mfrow=c(2,2))
 # plot the Fourier spectra across all electrodes
 f <- seq(0,499.5,0.5)
@@ -937,61 +948,69 @@ for (cond in 1:4){
   text(34,0.2,'1.15',pos=4,cex=1.8)
   text(49,0.24,'Amplitude',pos=4,cex=2,srt=270)
   
+  #for individual plots comment next line
 polygon(f[c(3:100,100:3)],c(meanfspec[cond,3:100]+SEfspec[cond,3:100],meanfspec[cond,100:3]-SEfspec[cond,100:3]),col=addalpha('cornflowerblue',0.25),border=NA)
+  #for individual plots comment next line
 lines(f[3:100],meanfspec[cond,3:100],lwd=3) 
+  #for individual plots uncomment next line
+#lines(f[3:100],abs(meanftemp[subj,cond,3:100]),lwd=1)
 # lines(c(0,50), meanfspec[1,c(53,53)],lty=2)
 # lines(c(26,26),c(0,0.5),col='red')
 }
 dev.off()
+#for individual plots uncomment next line
+#}
 
 #create exploratory spectra plots
-pdf(paste0(figdir,"/spectrum2.pdf"), width=12, height=12)
-par(mfrow=c(2,2))
-# plot the Fourier spectra across all electrodes
-f <- seq(0,499.5,0.5)
+# pdf(paste0(figdir,"/spectrum_other.pdf"), width=12, height=12)
+# par(mfrow=c(2,2))
+# # plot the Fourier spectra across all electrodes
+# f <- seq(0,499.5,0.5)
+# 
+#   ticklocsx <- seq(0,50,10)
+#   ticklocsy <- seq(0,0.5,0.1)
+# 
+# meanftemp <- apply(allfspec[,,targetelectrodes2,],c(1,2,4),mean,na.rm=TRUE)
+# meanfspec <- apply(abs(meanftemp),c(2,3),median,na.rm=TRUE)
+# SEfspec <- apply(abs(meanftemp),c(2,3),sd)/sqrt(46)
+# 
+# for (cond in 1:4){
+#   
+#   h1 <- readTIFF(paste0(figdir,'/head2_',titlelist[cond],'.tiff'))
+#   e3 <- readTIFF('Figures/colourbar.tiff')
+# 
+#   plot(x=NULL,y=NULL,axes=FALSE, ann=FALSE, xlim=c(min(ticklocsx),max(ticklocsx)), ylim=c(min(ticklocsy),max(ticklocsy)))
+#   axis(1, at=ticklocsx, tck=0.01, lab=F, lwd=2)     # plot tick marks (no labels)
+#   axis(2, at=ticklocsy, tck=0.01, lab=F, lwd=2)
+#   mtext(text = ticklocsx, side = 1, at=ticklocsx, line=0.5, cex=1.3)
+#   mtext(text = ticklocsy, side = 2, at=ticklocsy, line=0.2, las=1, cex=1.3)
+#   title(xlab='Frequency (Hz)', col.lab=rgb(0,0,0), line=2, cex.lab=2.5)
+#   title(ylab='Amplitude (µV)', col.lab=rgb(0,0,0), line=2.4, cex.lab=2.5)
+#   title(main=titlelist[cond],cex.main=2)  
+# 
+#   aspratio <- 90  # this is the aspect ratio of the output pdf
+#   imwidth <- 0.4
+#   xstart <- 18
+#   ystart <- 0.15
+#   rasterImage(h1,xstart,ystart,xstart+imwidth*aspratio,ystart+imwidth) 
+#   
+#   imwidth <- 0.1
+#   xstart <- 40
+#   ystart <- 0.12
+#   rasterImage(e3,xstart,ystart,xstart+imwidth*aspratio,ystart+imwidth)
+#   
+#   text(38,0.12,'0',pos=4,cex=1.8)
+#   text(34,0.2,'1.15',pos=4,cex=1.8)
+#   text(49,0.24,'Amplitude',pos=4,cex=2,srt=270)
+#   
+# # -- polygon(f[c(3:100,100:3)],c(meanfspec[cond,3:100]+SEfspec[cond,3:100],meanfspec[cond,100:3]-SEfspec[cond,100:3]),col=addalpha('cornflowerblue',0.25),border=NA)
+# 
+# # - -lines(f[3:100],meanfspec[cond,3:100],lwd=3) 
+# # lines(c(0,50), meanfspec[1,c(53,53)],lty=2)
+# # lines(c(26,26),c(0,0.5),col='red')
+# }
+# dev.off()
 
-  ticklocsx <- seq(0,50,10)
-  ticklocsy <- seq(0,0.5,0.1)
-
-meanftemp <- apply(allfspec[,,targetelectrodes2,],c(1,2,4),mean,na.rm=TRUE)
-meanfspec <- apply(abs(meanftemp),c(2,3),median,na.rm=TRUE)
-SEfspec <- apply(abs(meanftemp),c(2,3),sd)/sqrt(46)
-
-for (cond in 1:4){
-  
-  h1 <- readTIFF(paste0(figdir,'/head2_',titlelist[cond],'.tiff'))
-  e3 <- readTIFF('Figures/colourbar.tiff')
-
-  plot(x=NULL,y=NULL,axes=FALSE, ann=FALSE, xlim=c(min(ticklocsx),max(ticklocsx)), ylim=c(min(ticklocsy),max(ticklocsy)))
-  axis(1, at=ticklocsx, tck=0.01, lab=F, lwd=2)     # plot tick marks (no labels)
-  axis(2, at=ticklocsy, tck=0.01, lab=F, lwd=2)
-  mtext(text = ticklocsx, side = 1, at=ticklocsx, line=0.5, cex=1.3)
-  mtext(text = ticklocsy, side = 2, at=ticklocsy, line=0.2, las=1, cex=1.3)
-  title(xlab='Frequency (Hz)', col.lab=rgb(0,0,0), line=2, cex.lab=2.5)
-  title(ylab='Amplitude (µV)', col.lab=rgb(0,0,0), line=2.4, cex.lab=2.5)
-  title(main=titlelist[cond],cex.main=2)  
-
-  aspratio <- 90  # this is the aspect ratio of the output pdf
-  imwidth <- 0.4
-  xstart <- 18
-  ystart <- 0.15
-  rasterImage(h1,xstart,ystart,xstart+imwidth*aspratio,ystart+imwidth) 
-  
-  imwidth <- 0.1
-  xstart <- 40
-  ystart <- 0.12
-  rasterImage(e3,xstart,ystart,xstart+imwidth*aspratio,ystart+imwidth)
-  
-  text(38,0.12,'0',pos=4,cex=1.8)
-  text(34,0.2,'1.15',pos=4,cex=1.8)
-  text(49,0.24,'Amplitude',pos=4,cex=2,srt=270)
-  
-polygon(f[c(3:100,100:3)],c(meanfspec[cond,3:100]+SEfspec[cond,3:100],meanfspec[cond,100:3]-SEfspec[cond,100:3]),col=addalpha('cornflowerblue',0.25),border=NA)
-lines(f[3:100],meanfspec[cond,3:100],lwd=3) 
-# lines(c(0,50), meanfspec[1,c(53,53)],lty=2)
-# lines(c(26,26),c(0,0.5),col='red')
-}
-dev.off()
 
 
 #assess electrodes with greatest response
@@ -1079,11 +1098,13 @@ pdf('Figures/illusiondata.pdf', width = 12, height = 12)
   geom_violin(trim = FALSE) + 
   geom_violin(aes(color = Condition), trim = FALSE) + 
   geom_boxplot(width = 0.2, outlier.shape = NA, color = "black")+
+  stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="black", fill="black") +
   geom_dotplot(binaxis = "y",
                stackdir = "center",
                dotsize = 0.5,
                alpha = 0.2) +
   ylab("Illusion Score")+
+  ylim(-100,138) +
   font("ylab", size = 20)+
   font("xlab", size = 20)+
   font("xy.text", size = 15)+
@@ -1091,9 +1112,9 @@ pdf('Figures/illusiondata.pdf', width = 12, height = 12)
   geom_signif(data=subjecitve_data_illusion_1,comparisons=list(c("NI.Illusion.Median","MS.Illusion.Median"),
                                                                c("NIT.Illusion.Median","MS.Illusion.Median"),
                                                                c("UV.Illusion.Median","MS.Illusion.Median")),
-              map_signif_level = TRUE,annotations="***",y_position = c(115,135,145))+
+              map_signif_level = TRUE,annotations="***",y_position = c(105,120,129))+
   scale_color_manual(values = c("cornflowerblue", "cornflowerblue","cornflowerblue", "cornflowerblue"))+
-  theme(legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
+  theme(axis.text.x = element_text(size = 20), axis.text.y = element_text(size = 20),axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
 dev.off()
 
 #assumption check
@@ -1104,25 +1125,27 @@ subjecitve_data_illusion_1 %>%
 #ggqqplot(subjecitve_data_illusion_1, "Score", facet.by = "Condition")
 
 #run one way RMANOVA for illusion data
-#res.aov1 <- anova_test(data = subjecitve_data_illusion_1, dv = Score, wid = PID, within = Condition)
-#get_anova_table(res.aov1)
+res.aov1 <- anova_test(data = subjecitve_data_illusion_1, dv = Score, wid = PID, within = Condition,effect.size = "pes")
+get_anova_table(res.aov1)
 
 #get medians and sds for illusion data
 illusionmsds <- group_by(subjecitve_data_illusion_1, Condition) %>%
   summarise(
     count = n(),
     median = median(Score, na.rm = TRUE),
+    mean = mean(Score, na.rm = TRUE),
     sd = sd(Score, na.rm = TRUE)
   )
 illusionmsds
 
 #posthoc tests
-#pwc1 <- subjecitve_data_illusion_1 %>%
-  #pairwise_t_test(
-    #Score ~ Condition, paired = TRUE,
-    #p.adjust.method = "bonferroni"
-  #)
-#pwc1
+pwc1 <- subjecitve_data_illusion_1 %>%
+  pairwise_t_test(
+    Score ~ Condition, paired = TRUE,
+    p.adjust.method = "bonferroni",
+    detailed = TRUE
+  )
+pwc1
 
 #non-parametric tests
 res.fried_illusion <- subjecitve_data_illusion_1 %>% friedman_test(Score ~ Condition |PID)
@@ -1130,7 +1153,8 @@ effectsize_illusion <- subjecitve_data_illusion_1 %>% friedman_effsize(Score ~ C
 
 #posthoc tests
 nppwc_illusion <- subjecitve_data_illusion_1 %>%
-  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm")
+  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
+    detailed = TRUE)
 
 #disownership analysis
 
@@ -1157,11 +1181,13 @@ pdf('Figures/disownershipdata.pdf', width = 12, height = 11)
   geom_violin(trim = FALSE) + 
   geom_violin(aes(color = Condition), trim = FALSE) + 
   geom_boxplot(width = 0.2, outlier.shape = NA)+
+  stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="black", fill="black") +
   geom_dotplot(binaxis = "y",
                stackdir = "center",
                dotsize = 0.5,
                alpha = 0.2) +
   ylab("Disownerhsip Score")+
+  ylim(-100,138) +
   font("ylab", size = 20)+
   font("xlab", size = 20)+
   font("xy.text", size = 15)+
@@ -1169,9 +1195,9 @@ pdf('Figures/disownershipdata.pdf', width = 12, height = 11)
   geom_signif(data=subjecitve_data_disownership_1,comparisons=list(c("NI.Disownership.Median","UV.Disownership.Median"),
                                                                c("NIT.Disownership.Median","UV.Disownership.Median"),
                                                                c("MS.Disowenership.Median","UV.Disownership.Median")),
-              map_signif_level = TRUE,annotations=c("*","***","*"),y_position = c(115,130,145))+
+              map_signif_level = TRUE,annotations=c("*","***","*"),y_position = c(105,120,129))+
   scale_color_manual(values = c("cornflowerblue", "cornflowerblue","cornflowerblue", "cornflowerblue"))+
-  theme(legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
+  theme(axis.text.x = element_text(size = 20), axis.text.y = element_text(size = 20),axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
 dev.off()
 
 #assumption check
@@ -1195,12 +1221,12 @@ disownershipmsds <- group_by(subjecitve_data_disownership_1, Condition) %>%
 disownershipmsds
 
 #posthoc tests
-#pwc2 <- subjecitve_data_disownership_1 %>%
-  #pairwise_t_test(
-    #Score ~ Condition, paired = TRUE,
-    #p.adjust.method = "bonferroni"
-  #)
-#pwc2
+# pwc2 <- subjecitve_data_disownership_1 %>%
+#   pairwise_t_test(
+#     Score ~ Condition, paired = TRUE,
+#     p.adjust.method = "bonferroni",
+#     detailed = TRUE
+#   )
 
 #non-parametric tests
 res.fried_disownership <- subjecitve_data_disownership_1 %>% friedman_test(Score ~ Condition |PID)
@@ -1208,7 +1234,8 @@ effectsize_disownership <- subjecitve_data_disownership_1 %>% friedman_effsize(S
 
 #posthoc tests
 nppwc_disownership <- subjecitve_data_disownership_1 %>%
-  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm")
+  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
+    detailed = TRUE)
 
 
 
@@ -1237,6 +1264,7 @@ pdf('Figures/controldata.pdf', width = 12, height = 11)
   geom_violin(trim = FALSE) + 
   geom_violin(aes(color = Condition), trim = FALSE) + 
   geom_boxplot(width = 0.2, outlier.shape = NA)+
+  stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="black", fill="black") +
   geom_dotplot(binaxis = "y",
                stackdir = "center",
                dotsize = 0.5,
@@ -1247,7 +1275,7 @@ pdf('Figures/controldata.pdf', width = 12, height = 11)
   font("xy.text", size = 15)+
   scale_x_discrete(labels = c('NI','NIT','MS','UV'))+
   scale_color_manual(values = c("cornflowerblue", "cornflowerblue","cornflowerblue", "cornflowerblue"))+
-  theme(legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
+  theme(axis.text.x = element_text(size = 20), axis.text.y = element_text(size = 20),axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),legend.position = "none", panel.background = element_blank(),axis.line = element_line(colour = "black"))
 dev.off()
 
 #assumption check
@@ -1278,12 +1306,18 @@ controlmsds <- group_by(subjecitve_data_control_1, Condition) %>%
 #pwc3
 
 #non-parametric tests
-res.fried_control <- subjecitve_data_control_1 %>% friedman_test(Score ~ Condition |PID)
-effectsize_control <- subjecitve_data_control_1 %>% friedman_effsize(Score ~ Condition |PID)
+kruskall.wallis <- kruskal.test(Score ~ Condition, data = subjecitve_data_control_1)
+#res.fried_control <- subjecitve_data_control_1 %>% friedman_test(Score ~ Condition |PID)
+#effectsize_control <- subjecitve_data_control_1 %>% friedman_effsize(Score ~ Condition |PID)
 
 #posthoc tests
-nppwc_control <- subjecitve_data_control_1 %>%
-  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "bonferroni")
+# nppwc_control <- subjecitve_data_control_1 %>%
+#   wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "bonferroni",
+#     detailed = TRUE)
+
+nppwc_controlD <- dunnTest(Score ~ Condition,
+         data=subjecitve_data_control_1,
+         method="bonferroni")
 
 
 
@@ -1300,7 +1334,7 @@ pdf('Figures/correlationdata.pdf', width = 12, height = 11)
           cor.coef = TRUE, cor.method = "spearman",
           cor.coef.size = 8,
           xlab = "Subjecitve Illusion Score", ylab = "SSEP Amplitude (µV)") +
-    theme(text = element_text(size = 20))
+    theme(axis.text.x = element_text(size = 20), axis.text.y = element_text(size = 20),axis.title.x = element_text(size = 20), axis.title.y = element_text(size = 20),text = element_text(size = 20))
           
 dev.off()
 
@@ -1311,7 +1345,7 @@ dev.off()
 
 # Abstract
 
-Resizing illusions, delivered using augmented reality, resize a body part through either stretching or shrinking manipulations. These resizing illusions have been investigated in visuotactile, visual-only, and visuo-auditory presentations. However, the neural underpinnings of these resizing illusions remain undefined. This study sought to understand the neural mechanisms behind these illusions (n = 46), by using somatosensory steady state evoked potentials in addition to subjective self-report questionnaires, to enhance knowledge of what drives the subjective embodiment during resizing illusions. Since these Illusions have been shown to provide analgesic effects for individuals with chronic pain conditions, this study also aimed to provide an empirical basis for future investigations in chronic pain samples undergoing resizing illusions. Confirmatory results demonstrated significant differences in subjective experience between non-illusion and multisensory illusion conditions, and EEG data measuring somatosensory response across electrodes of interest (F1 & FC1) to 26Hz stimulation to the resized digit showed a significant effect of condition with reduced amplitudes in illusory conditions compared to non-illusion conditions. Exploratory analysis of electrodes with the greatest SSEP response across conditions (FPZ & FCZ) found no effect of condition but did show reduced amplitudes in illusory and non-illusion tactile conditions compared to the non-illusion condition. These findings demonstrate a potential sharpening of neural representations as a result of both illusory stretching and tactile input in participants without chronic pain, thereby providing a basis for investigations of comparable subjective and steady state illusion responses in a chronic pain population, who are thought to have more diffuse neural representations of their affected body parts.
+Resizing illusions, delivered using augmented reality, resize a body part through either stretching or shrinking manipulations. These resizing illusions have been investigated in visuotactile, visual-only, and visuo-auditory presentations. However, the neural underpinnings of these resizing illusions remain undefined. This study sought to understand the neural mechanisms behind these illusions (n = 46), by using somatosensory steady state evoked potentials in addition to subjective self-report questionnaires, to enhance knowledge of what drives the subjective embodiment during resizing illusions. Since these Illusions have been shown to provide analgesic effects for individuals with chronic pain conditions, this study also aimed to provide an empirical basis for future investigations in chronic pain samples undergoing resizing illusions. Confirmatory results demonstrated significant differences in subjective experience between non-illusion and multisensory illusion conditions, whilst EEG data measuring somatosensory response across electrodes of interest (F1 & FC1) to 26Hz stimulation to the resized digit showed no significant effects of condition. Exploratory non-parametric SSEP analyses showed a significant effect of condition, with reduced amplitudes in illusory conditions compared to non-illusion conditions, however no significant differences arose in exploratory post hoc tests. These findings demonstrate no clear effect of resizing illusions on somatosensory SSEP amplitudes, but could hint to a potential sharpening of neural representations as a result of illusory stretching in participants without chronic pain, thereby providing a basis for investigations of comparable subjective and steady state illusion responses in a chronic pain population, who are thought to have more diffuse neural representations of their affected body parts.
 
 # Introduction
 
@@ -1325,7 +1359,7 @@ Looking specifically at research into somatosensory cortex modulation using stea
 
 Several studies have investigated the analgesic effect of these resizing illusions, as they have been shown to reduce chronic pain in conditions such as osteoarthritis [@preston2011a; @preston2020a; @stanton2018a], chronic back pain [@diers2013a], and complex regional pain syndrome [@moseley2008a]. However, the understanding of how these illusions reduce pain is still undetermined. It has been suggested chronic pain involves cortical misrepresentations of the size of the affected body part [@boesch2016a], however, it is unknown if resizing illusions affect this cortical misrepresentation, and if this is therefore what causes the reduction in pain. No study has yet used neuroimaging with a chronic pain population to determine the cortical activity correlated with this illusory analgesia. However, importantly, there has also not been research conducted using somatosensory SSEPs in participants without chronic pain, to understand what the cortical representations of these resizing illusions are like without the impact of a chronic pain condition. Therefore, the aim of this study is to examine potential changes in the somatosensory cortex during illusory finger resizing in participants without chronic pain, using vibrotactile SSEPs, to use as a basis for later investigations in a sample of chronic pain participants. If we can identify a link between illusory resizing and somatosensory cortex changes, this will enhance our understanding of what is happening in the brain during these illusions and will act as a reference for comparison with neural representations in individuals with chronic pain conditions. 
 
-Using different sensory manipulations of finger resizing illusions, in addition to using an electromagnetic solenoid stimulator, this study aimed to investigate subjective illusory experience and SSEP responses in participants without chronic pain, to better understand the experience of body ownership illusions from subjective experience and cortical representation perspectives. To test this, different finger resizing illusions consisting of multisensory (visuotactile) stretching (MS), unimodal-visual stretching (UV), a non-illusion control condition without tactile input (NI), and a non-illusion control condition with tactile input (NIT) were used to assess alternate aspects of illusory resizing manipulations and their related effects on SSEP response. The inclusion of two control conditions (NI, NIT) was to assess whether localisation of cortical representations arise from resizing manipulations to the finger, or from tactile input given to the finger. The first hypothesis, acting as a positive control (1), was that there will be a greater illusory experience, measured via a subjective illusory experience questionnaire, in the (1a) MS condition compared to the NI condition and in the (1b) MS condition compared to the NIT condition. The main experimental hypothesis for this study was that (2) there will be a significant difference in SSEP response across the electrodes of interest (F1 & FC1, see section 3. Pilot Data) when comparing across all conditions.  Subsequent hypotheses were that there would be significant differences in SSEP response when comparing (2a) MS visuotactile illusory resizing to the NI condition, when comparing (2b) UV illusory resizing to the NI condition, but (2c) that there would be no significant difference when comparing the NIT condition to the NI condition.
+Using different sensory manipulations of finger resizing illusions, in addition to using an electromagnetic solenoid stimulator, this study aimed to investigate subjective illusory experience and somatosensory SSEP responses in participants without chronic pain, to better understand the experience of body ownership illusions from subjective experience and cortical representation perspectives. To test this, different finger resizing illusions consisting of multisensory (visuotactile) stretching (MS), unimodal-visual stretching (UV), a non-illusion control condition without tactile input (NI), and a non-illusion control condition with tactile input (NIT) were used to assess alternate aspects of illusory resizing manipulations and their related effects on somatosensory SSEP response. The inclusion of two control conditions (NI, NIT) was to assess whether localisation of cortical representations arise from resizing manipulations to the finger, or from tactile input given to the finger. The first hypothesis, acting as a positive control (1), was that there will be a greater illusory experience, measured via a subjective illusory experience questionnaire, in the (1a) MS condition compared to the NI condition and in the (1b) MS condition compared to the NIT condition. The main experimental hypothesis for this study was that (2) there will be a significant difference in somatosensory SSEP response across the electrodes of interest (F1 & FC1, see Appendix A Pilot Data) when comparing across all conditions.  Subsequent hypotheses were that there would be significant differences in SSEP response when comparing (2a) the MS condition to the NI condition, when comparing (2b) the UV condition to the NI condition, but (2c) that there would be no significant difference when comparing the NIT condition to the NI condition.
 
 # Methods
 
@@ -1384,9 +1418,9 @@ Data collection was terminated when the full sample of participants had been tes
 
 ### Preprocessing Steps
 
-EEG data were first converted using MATLAB and EEGlab from the ANT EEprobe .cnt format to EEGlab .set format. All subsequent analysis was then be conducted using the MNE-Python toolbox (Gramfort et al., 2013). A 50Hz notch filter was first applied to the raw EEG data for all electrodes, followed by calculation of the standard error across time for each electrode for each participant [@luck2021a]. Across the standard errors for all participants, the 5% of electrodes which showed the largest standard errors were used to create a standard error threshold. Any electrode with a standard error above this threshold, or with a value of 0, was removed from analysis. Where a participant had over 50% of their electrodes over the standard error threshold or with a value of 0, or if the electrodes requiring removal included either electrodes F1 or FC1 (electrodes of interest), then their data was removed. Primary analysis of the remaining EEG data then involved averaging the signal across the electrodes of interest (or using just electrode F1 or FC1 in case of electrode removal), and calculating the Fourier transform for each trial per participant. These amplitudes were then averaged across trials to give overall results for each participant. Statistical comparisons were then performed on the Fourier amplitudes at the stimulation frequency (26Hz), across conditions and participants. No additional filtering or denoising steps were applied to the EEG data, in line with Figueira et al.’s (2022) report that only a Fourier transform is typically needed for this type of EEG data.
+EEG data were first converted using MATLAB and EEGlab from the ANT EEprobe .cnt format to EEGlab .set format. All subsequent analysis was then be conducted using the MNE-Python toolbox (Gramfort et al., 2013). A 50Hz notch filter was first applied to the raw EEG data for all electrodes, followed by calculation of the standard error across time for each electrode for each participant [@luck2021a]. Across the standard errors for all participants, the 5% of electrodes which showed the largest standard errors were used to create a standard error threshold. Any electrode with a standard error above this threshold, or with a value of 0, was removed from analysis. Where a participant had over 50% of their electrodes over the standard error threshold or with a value of 0, or if the electrodes requiring removal included either electrodes F1 or FC1 (electrodes of interest), then their data was removed. Primary analysis of the remaining EEG data then involved averaging the signal across the electrodes of interest (or using just electrode F1 or FC1 in case of electrode removal), and calculating the Fourier transform for each trial per participant. These amplitudes were then averaged across trials per condition to give overall results for each participant per condition. Statistical comparisons were then performed on the Fourier amplitudes at the stimulation frequency (26Hz), across conditions and participants. No additional filtering or denoising steps were applied to the EEG data, in line with Figueira et al.’s (2022) report that only a Fourier transform is typically needed for this type of EEG data.
 
-Regarding questionnaire data, scores for both illusion experience questions were combined to give median scores, along with both disownership questions and both control questions, resulting in 3 median scores per condition per participant. The median control scores were used to create an index of the illusion and disownership scores by subtracting the median control score from the median illusion and median disownership scores, in line with previous research doing similarly [@matsumiya2021a; @kilteni2017a; @kalckert2012a]. The normalised (baseline corrected) data were used for analyses, with a new scale from -100 to +100 with 100 indicating strongly agree, 50 indicating a neutral opinion, and scores below 0 indicating strongly disagree with the statements on the questionnaire. 50 is maintained as a neutral opinion so that the normalised data still adhered to the thresholds that the participants were presented with during the experiment. 
+Regarding questionnaire data, scores for both illusion experience questions were combined to give median scores, along with both disownership questions and both control questions, resulting in 3 median scores per condition per participant. The median control scores were used to create an index of the illusion and disownership scores by subtracting the median control score from the median illusion and median disownership scores, in line with previous research doing similarly [@matsumiya2021a; @kilteni2017a; @kalckert2012a]. The normalised (control indexed) data were used for analyses, with a new scale from -100 to +100 with 100 indicating strongly agree, 50 indicating a neutral opinion, and scores below 0 indicating strongly disagree with the statements on the questionnaire. 50 is maintained as a neutral opinion so that the normalised data still adhered to the thresholds that the participants were presented with during the experiment. 
 
 ## Planned Analyses
 
@@ -1394,15 +1428,15 @@ Regarding questionnaire data, scores for both illusion experience questions were
 
 *(1 – Positive Control) There will be a greater illusory experience, measured via a subjective illusory experience questionnaire, in the (1a) MS condition compared to the NI condition and in the (1b) MS condition compared to the NIT condition.* 
 
-The subjective illusory experience questionnaire was  used as a positive control for the current study. Previous research has shown significantly greater illusion strength for MS conditions compared to non-illusion conditions (Carey et al., 2019; Hansford et al., 2023a), which we attempted to replicate. Questionnaire data were be analysed using R (R Core Team, 2021). A one-way ANOVA (or non-parametric equivalent)would be run to compare the dependent variable of normalised (baseline corrected) illusion score from each independent condition. Given significant findings, post-hoc tests would be run, with Bonferroni correction for 2 comparisons (MS Vs NI, MS Vs NIT) at an initial alpha of 0.05. 
+The subjective illusory experience questionnaire was  used as a positive control for the current study. Previous research has shown significantly greater illusion strength for MS conditions compared to non-illusion conditions (Carey et al., 2019; Hansford et al., 2023a), which we attempted to replicate. Questionnaire data were be analysed using R (R Core Team, 2021). A one-way ANOVA would be run to compare the dependent variable of normalised (control indexed) illusion score from each independent condition. Given significant findings, post-hoc tests would be run, with Bonferroni correction for 2 comparisons (MS Vs NI, MS Vs NIT) at an initial alpha of 0.05. 
 
 Interpretations for hypothesis 1 can be found in the design table (Table 1). 
 
 ### Hypothesis 2
 
-*There will be a significant difference in SSEP response across the electrodes of interest (F1 & FC1) when comparing (2a) the MS condition to the NI condition, when comparing (2b) the UV condition to the NI condition, but (2c) that there will be no significant difference when comparing the NIT condition to the NI condition.*
+*(2) There will be a significant difference in somatosensory SSEP response across the electrodes of interest (F1 & FC1). Subsequent hypotheses are that there will be a significant difference in SSEP response in (2a) the MS condition compared to the NI condition, and (2b) the UV condition compared to the NI condition, but (2c) that there will be no significant difference when comparing the NIT condition to the NI condition. *
 
-As mentioned in the EEG pre-processing steps in section 2.4.1, analysis of EEG data involved taking a Fourier transform for each waveform averaged across the electrodes of interest, to obtain the amplitude for each trial at the vibration frequency (26Hz). These amplitudes would then be averaged across trials to give overall results for each participant, before running a repeated measures one way ANOVA (or non-parametric equivalent) comparing SSEP response from each experimental condition. The dependent variable would be SSEP amplitude in µV, whilst the independent variable would be the different manipulations given in each comparison condition. Given significant findings in the ANOVA, post hoc comparisons of every condition would be conducted at a new alpha of .016 (corrected for 3 comparisons (MS Vs NI, MS Vs UV, UV Vs NI)). Based on the pilot data in Appendix A, we expected to see activation most pronounced over mid-frontal distributions, covering F1 and FC1 electrodes and therefore these electrodes were selected as the electrodes of interest. 
+As mentioned in the EEG pre-processing steps in section 2.4.1, analysis of EEG data involved taking a Fourier transform for each waveform averaged across the electrodes of interest, to obtain the amplitude for each trial at the vibration frequency (26Hz). These amplitudes would then be averaged across trials to give overall results for each participant, before running a repeated measures one way ANOVA (or non-parametric equivalent) comparing somatosensory SSEP response from each experimental condition. The dependent variable would be SSEP amplitude in µV, whilst the independent variable would be the different manipulations given in each comparison condition. Given significant findings in the ANOVA, post hoc comparisons would be conducted at a new alpha of .016 (corrected for 3 comparisons (MS Vs NI, UV Vs NI, NIT Vs NI)). Based on the pilot data in Appendix A, we expected to see activation most pronounced over mid-frontal distributions, covering F1 and FC1 electrodes and therefore these electrodes were selected as the electrodes of interest. 
 
 Interpretations for hypothesis 2 can be found in the design table (Table 1). 
 
@@ -1432,13 +1466,13 @@ The stage 1 report for this study, with details regarding planned analyses and p
 
 # Results
 
-Positive control analyses of the subjective illusion data can be seen in @fig-illusion. A Friedman test found a significant overall effect of condition with a moderate effect size ($\chi^2$(`r round(res.fried_illusion$df[1],digits = 2)`) = `r round(res.fried_illusion$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_illusion$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_illusion$effsize[1],digits = 2)`) and post hoc Wilcoxon tests with Holm corrections found significantly greater combined illusion score in the Multisensory Strething (MS) condition (M = `r round(illusionmsds$median[3],digits = 2)`, SD = `r round(illusionmsds$sd[3],digits = 2)`) compared to the Non-Illusion (NI; M = `r round(illusionmsds$median[1],digits = 2)`, SD = `r round(illusionmsds$sd[1],digits = 2)`, *p* = `r format.pval(nppwc_illusion$p.adj[2], digits = 1, eps = 0.001, nsmall = 3)`) and Non Illusion Tactile (NIT; M = `r round(illusionmsds$median[2],digits = 2)`, SD = `r round(illusionmsds$sd[2],digits = 2)`, *p* = `r format.pval(nppwc_illusion$p.adj[4], digits = 1, eps = 0.001, nsmall = 3)`) conditions, thereby supporting hypotheses 1a and 1b and fulfilling the positive control checks. Exploratory analysis also showed a significant difference between the MS and Unimodal Visual (UV) condition (M = `r round(illusionmsds$median[4],digits = 2)`, SD = `r round(illusionmsds$sd[4],digits = 2)`, *p* = `r format.pval(nppwc_illusion$p.adj[6], digits = 1, eps = 0.001, nsmall = 3)`). 
+Positive control analyses of the subjective illusion data can be seen in @fig-illusion. A one-way ANOVA found a significant overall effect of condition with a large effect size (*F*(`r round(res.aov1$ANOVA$DFn[1])`,`r round(res.aov1$ANOVA$DFd[1])`), *p.adj* = `r format.pval(res.aov1$ANOVA$p[1], digits = 1, eps = 0.001, nsmall = 3)`, $ηp^2$ = `r res.aov1$ANOVA$pes[1]`). Post hoc t tests with Bonferroni corrections found significantly greater combined illusion score in the MS condition (M = `r round(illusionmsds$mean[3],digits = 2)`, SD = `r round(illusionmsds$sd[3],digits = 2)`) compared to the Non-Illusion (NI; M = `r round(illusionmsds$mean[1],digits = 2)`, SD = `r round(illusionmsds$sd[1],digits = 2)`, *t* = `r round(pwc1$statistic[2], digits = 2)`, *p.adj* = `r format.pval(pwc1$p.adj[2], digits = 1, eps = 0.001, nsmall = 3)`, Cohen's d = `r round(pwc1$estimate[2])`) and Non Illusion Tactile (NIT; M = `r round(illusionmsds$mean[2],digits = 2)`, SD = `r round(illusionmsds$sd[2],digits = 2)`, *t* = `r round(pwc1$statistic[4], digit = 2)`, *p.adj* = `r format.pval(pwc1$p.adj[4], digits = 1, eps = 0.001, nsmall = 3)`, Cohen's d = `r round(pwc1$estimate[4])`) conditions, thereby supporting hypotheses 1, 1a, and 1b and fulfilling the positive control checks.
 
-![Combined Illusion Scores Across Conditions. Scores below 50 indicate disagreement with experience of illusion statements, whilst scores above 50 indicate agreement. Box plots show medians and inter-quartile ranges of data. Data points are shown in grey jitter. ](Figures/illusiondata.pdf){#fig-illusion}
 
-Exploratory analysis of subjective disownership and control data can be seen in Appendix B.
+![Combined Illusion Score Index Across Conditions (NI: Non-Illusion; NIT: Non-Illusion Tactile; MS: Multisensory; UV: Unimodal Visual). Scores below 50 indicate disagreement with experience of illusion statements, whilst scores above 50 indicate agreement. A continuous visual analogue scale was used in data collection, with agreement and disagreement statements located at each end of the scale. Box plots show means, medians and inter-quartile ranges of data. Medians are indicated with a horizontal line whilst means are indicated by a black dot. Data points are shown in grey jitter binned along the y-axis, grouped by condition. ](Figures/illusiondata.pdf){#fig-illusion}
 
-Analyses of SSEP data can be seen in @fig-eeg1. The left panel confirms the presence of a clear steady-state signal at 26Hz, which was strongest over the fronto-central electrodes. A Friedman test found a significant overall effect of condition with a small effect size ($\chi^2$(`r round(res.fried_eeg1$df[1],digits = 2)`) = `r round(res.fried_eeg1$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_eeg1$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_eeg1$effsize[1],digits = 2)`), supporting Hypothesis 2. However, post hoc Wilcoxon tests with Holm corrections found no significant differences between SSEP amplitude when comparing the NI condition (M = `r round(eegdatamsds$median[1],digits = 2)`, SD = `r round(eegdatamsds$sd[1],digits = 2)`) to the MS condition (M = `r round(eegdatamsds$median[3],digits = 2)`, SD = `r round(eegdatamsds$sd[3],digits = 2)`, *p* = `r format.pval(nppwc_eeg1$p.adj[1], digits = 1, eps = 0.001, nsmall = 3)`), or UV condition (M = `r round(eegdatamsds$median[4],digits = 2)`, SD = `r round(eegdatamsds$sd[4],digits = 2)`, *p* = `r format.pval(nppwc_eeg1$p.adj[2], digits = 1, eps = 0.001, nsmall = 3)`), meaning Hypotheses 2a and 2b were unsupported. There was no significant difference found when comparing the NI condition to the NIT condition (M = `r round(eegdatamsds$median[2],digits = 2)`, SD = `r round(eegdatamsds$sd[2],digits = 2)`, *p* = `r format.pval(nppwc_eeg1$p.adj[3], digits = 1, eps = 0.001, nsmall = 3)`), supporting Hypothesis 2c. 
+
+Analyses of SSEP data can be seen in @fig-eeg1. The left panel confirms the presence of a clear steady-state signal at 26Hz, which was strongest over the fronto-central electrodes. A one-way ANOVA found no significant effect of condition with a small effect size (*F*(`r round(res.aov4$ANOVA$DFn[1])`,`r round(res.aov4$ANOVA$DFd[1])`), *p* = `r format.pval(res.aov4$ANOVA$p[1], digits = 1, eps = 0.001, nsmall = 3)`, $ηp^2$ = `r res.aov4$ANOVA$pes[1]`), opposing Hypothesis 2. Post hoc t tests with Bonferroni corrections found no significant differences between SSEP amplitude when comparing the NI condition (M = `r round(eegdatamsds$mean[1],digits = 2)`, SD = `r round(eegdatamsds$sd[1],digits = 2)`) to the MS condition (M = `r round(eegdatamsds$mean[3],digits = 2)`, SD = `r round(eegdatamsds$sd[3],digits = 2)`, *t* = `r round(pwc4$statistic[2], digits = 2)`, *p.adj* = `r format.pval(pwc4$p.adj[2], digits = 1, eps = 0.001, nsmall = 3)`, Cohen's d = `r round(pwc4$estimate[2],digits = 2)`), or UV condition (M = `r round(eegdatamsds$mean[4],digits = 2)`, SD = `r round(eegdatamsds$sd[4],digits = 2)`, *t* = `r round(pwc4$statistic[3], digits = 2)`, *p.adj* = `r format.pval(pwc4$p.adj[3], digits = 1, eps = 0.001, nsmall = 3)`, Cohen's d = `r round(pwc4$estimate[3],digits = 2)`), meaning Hypotheses 2a and 2b were unsupported. There was no significant difference found when comparing the NI condition to the NIT condition (M = `r round(eegdatamsds$mean[2],digits = 2)`, SD = `r round(eegdatamsds$sd[2],digits = 2)`, *t* = `r round(pwc4$statistic[1], digits = 2)`, *p.adj* = `r format.pval(pwc4$p.adj[1], digits = 1, eps = 0.001, nsmall = 3)`, Cohen's d = `r round(pwc4$estimate[1],digits = 2)`), supporting Hypothesis 2c. 
 
 ::: {#fig-confirmeeg layout-valign="bottom" layout="[[48,-4,48], [100]]"}
 
@@ -1446,40 +1480,47 @@ Analyses of SSEP data can be seen in @fig-eeg1. The left panel confirms the pres
 
 ![](Figures/eegdata1.pdf){#fig-eeg1}
 
-(a): SSEP Amplitude Spectra Across Conditions for electrodes of interest (F1 & FC1). Shading shows ±1 standard error across participants (n=46). (b): SSEP Amplitudes Across Conditions. Box plots show medians and inter-quartile ranges of data. Data points are shown in grey jitter.  
+(a): SSEP Amplitude Spectra Across Conditions (NI: Non-Illusion; NIT: Non-Illusion Tactile; MS: Multisensory; UV: Unimodal Visual) for electrodes of interest (F1 & FC1). Shading shows ±1 standard error across participants (n=46). (b): SSEP Amplitudes Across Conditions. Box plots show menas, medians and inter-quartile ranges of data. Medians are indicated with a horizontal line whilst means are indicated by a black dot. Data points are shown in grey jitter binned along the y-axis, grouped by condition.  
 :::
 
-Exploratory correlational analyses were conducted to assess the correlation between participant’s subjective illusion score and their SSEP amplitude across electrodes of interest (F1 & FC1) for each condition to see if those who experienced a stronger feeling of the illusion had more reduced SSEP amplitudes, results showed no significant correlations and can be seen in Appendix C.
+## Exploratory Analyses
 
-Despite our pilot data showing the strongest SSEP response to be over electrodes F1 and FC1, the headplots in Figure 4 indicate the strongest responses to be more central for this dataset. Previous research assessing somatosensory SSEP responses has found activation to be slightly more central than electrodes F1 and FC1 [@porcu2014a; @timora2018a], In line with the findings within this dataset. Therefore, exploratory analysis was conducted to assess which electrodes gave the greatest overall response, which resulted in electrodes FPZ and FCZ being used for further exploratory analysis. Exploratory analysis can be seen in @fig-eeg2. A Friedman test found no overall effect of condition with a small effect size ($\chi^2$(`r round(res.fried_eeg2$df[1],digits = 2)`) = `r round(res.fried_eeg2$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_eeg2$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_eeg2$effsize[1],digits = 2)`). Post hoc Wilcoxon tests with holm corrections found no significant differences between SSEP amplitude when comparing the NI condition (M = `r round(eegdatamsds2$median[1],digits = 2)`, SD = `r round(eegdatamsds2$sd[1],digits = 2)`) to the NIT condition (M = `r round(eegdatamsds2$median[2],digits = 2)`, SD = `r round(eegdatamsds2$sd[2],digits = 2)`, *p* = `r format.pval(nppwc2_eeg2$p.adj[3], digits = 1, eps = 0.001, nsmall = 3)`), MS condition (M = `r round(eegdatamsds2$median[3],digits = 2)`, SD = `r round(eegdatamsds2$sd[3],digits = 2)`, *p* = `r format.pval(nppwc2_eeg2$p.adj[1], digits = 1, eps = 0.001, nsmall = 3)`), or UV condition (M = `r round(eegdatamsds2$median[4],digits = 2)`, SD = `r round(eegdatamsds2$sd[4],digits = 2)`, *p* = `r format.pval(nppwc2_eeg2$p.adj[2], digits = 1, eps = 0.001, nsmall = 3)`). 
+Since illusion data violated assumptions for parametric tests, an exploratory Friedman test was run and found a significant overall effect of condition with a moderate effect size ($\chi^2$(`r round(res.fried_illusion$df[1],digits = 2)`) = `r round(res.fried_illusion$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_illusion$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_illusion$effsize[1],digits = 2)`) and post hoc Wilcoxon tests with Holm corrections found significantly greater combined illusion score in the Multisensory Stretching (MS) condition (M = `r round(illusionmsds$median[3],digits = 2)`, SD = `r round(illusionmsds$sd[3],digits = 2)`) compared to the Non-Illusion (NI; M = `r round(illusionmsds$median[1],digits = 2)`, SD = `r round(illusionmsds$sd[1],digits = 2)`, *z* = `r round(nppwc_illusion$statistic[2], digits = 2)`, *p.adj* = `r format.pval(nppwc_illusion$p.adj[2], digits = 1, eps = 0.001, nsmall = 3)`, r = `r round(nppwc_illusion$estimate[2],digits = 2)`), Non Illusion Tactile (NIT; M = `r round(illusionmsds$median[2],digits = 2)`, SD = `r round(illusionmsds$sd[2],digits = 2)`, *z* = `r round(nppwc_illusion$statistic[4], digits = 2)`, *p.adj* = `r format.pval(nppwc_illusion$p.adj[4], digits = 1, eps = 0.001, nsmall = 3)`, r = `r round(nppwc_illusion$estimate[4],digits = 2)`) and UV conditions (UV; M = `r round(illusionmsds$median[4],digits = 2)`, SD = `r round(illusionmsds$sd[4],digits = 2)`, *z* = `r round(nppwc_illusion$statistic[6], digits = 2)`, *p.adj* = `r format.pval(nppwc_illusion$p.adj[6], digits = 1, eps = 0.001, nsmall = 3)`, r = `r round(nppwc_illusion$estimate[6],digits = 2)`). 
 
-::: {#fig-exploreeeg layout-valign="bottom" layout="[[48,-4,48], [100]]"}
+In addition to illusion data, disownership and control data were collected and therefore analyses on these datasets have also been run. Exploratory analysis of subjective disownership and control data can be seen in Appendix B. A significant increase in disownership scores were found in the UV condition compared to all other conditions, and there were no significant comparisons found for control data. All statistical reporting can be seen in Appendix B. 
 
-![](Figures/spectrum2.pdf){#fig-spectrum2}
+EEG data also violated assumptions for parametric tests and therefore a Friedman test was also run and found a significant overall effect of condition with a small effect size ($\chi^2$(`r round(res.fried_eeg1$df[1],digits = 2)`) = `r round(res.fried_eeg1$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_eeg1$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_eeg1$effsize[1],digits = 2)`), however, post hoc Wilcoxon tests with Holm corrections found no significant differences between SSEP amplitude when comparing the NI condition (M = `r round(eegdatamsds$median[1],digits = 2)`, SD = `r round(eegdatamsds$sd[1],digits = 2)`) to the MS condition (M = `r round(eegdatamsds$median[3],digits = 2)`, SD = `r round(eegdatamsds$sd[3],digits = 2)`, *z* = `r round(nppwc_eeg1$statistic[1], digits = 2)`, *p.adj* = `r format.pval(nppwc_eeg1$p.adj[1], digits = 1, eps = 0.001, nsmall = 3)`, r = `r round(nppwc_eeg1$estimate[1],digits = 2)`), or UV condition (M = `r round(eegdatamsds$median[4],digits = 2)`, SD = `r round(eegdatamsds$sd[4],digits = 2)`, *z* = `r round(nppwc_eeg1$statistic[2], digits = 2)`, *p.adj* = `r format.pval(nppwc_eeg1$p.adj[2], digits = 1, eps = 0.001, nsmall = 3)`, r = `r round(nppwc_eeg1$estimate[2],digits = 2)`). There was no significant difference found when comparing the NI condition to the NIT condition (M = `r round(eegdatamsds$median[2],digits = 2)`, SD = `r round(eegdatamsds$sd[2],digits = 2)`, *z* = `r round(nppwc_eeg1$statistic[3], digits = 2)`, *p.adj* = `r format.pval(nppwc_eeg1$p.adj[3], digits = 1, eps = 0.001, nsmall = 3)`, r = `r round(nppwc_eeg1$estimate[3],digits = 2)`). 
 
-![](Figures/eegdata2.pdf){#fig-eeg2}
+Exploratory correlational analyses were also conducted to assess the correlation between participant’s subjective illusion score and their SSEP amplitude across electrodes of interest (F1 & FC1) for each condition to see if those who experienced a stronger feeling of the illusion had more reduced SSEP amplitudes, results showed no significant correlations and can be seen in Appendix C.
 
-(a): Exploratory SSEP Amplitude Spectra Across Conditions for electrodes of interest (FCZ & FPZ). Shading shows standard error. (b): Exploratory SSEP Amplitudes Across Conditions. Box plots show medians and inter-quartile ranges of data. Data points are shown in grey jitter.  
-:::
+<!-- Despite our pilot data showing the strongest SSEP response to be over electrodes F1 and FC1, the headplots in Figure 4 indicate the strongest responses to be more central for this dataset. Previous research assessing somatosensory SSEP responses has found activation to be slightly more central than electrodes F1 and FC1 [@porcu2014a; @timora2018a], In line with the findings within this dataset. Therefore, exploratory analysis was conducted to assess which electrodes gave the greatest overall response, which resulted in electrodes FPZ and FCZ being used for further exploratory analysis. Exploratory analysis can be seen in @fig-eeg2. A Friedman test found no overall effect of condition with a small effect size ($\chi^2$(`r round(res.fried_eeg2$df[1],digits = 2)`) = `r round(res.fried_eeg2$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_eeg2$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_eeg2$effsize[1],digits = 2)`). Post hoc Wilcoxon tests with holm corrections found no significant differences between SSEP amplitude when comparing the NI condition (M = `r round(eegdatamsds2$median[1],digits = 2)`, SD = `r round(eegdatamsds2$sd[1],digits = 2)`) to the NIT condition (M = `r round(eegdatamsds2$median[2],digits = 2)`, SD = `r round(eegdatamsds2$sd[2],digits = 2)`, *p* = `r format.pval(nppwc2_eeg2$p.adj[3], digits = 1, eps = 0.001, nsmall = 3)`), MS condition (M = `r round(eegdatamsds2$median[3],digits = 2)`, SD = `r round(eegdatamsds2$sd[3],digits = 2)`, *p* = `r format.pval(nppwc2_eeg2$p.adj[1], digits = 1, eps = 0.001, nsmall = 3)`), or UV condition (M = `r round(eegdatamsds2$median[4],digits = 2)`, SD = `r round(eegdatamsds2$sd[4],digits = 2)`, *p* = `r format.pval(nppwc2_eeg2$p.adj[2], digits = 1, eps = 0.001, nsmall = 3)`).  -->
+
+<!-- ::: {#fig-exploreeeg layout-valign="bottom" layout="[[48,-4,48], [100]]"} -->
+
+<!-- ![](Figures/spectrum2.pdf){#fig-spectrum2} -->
+
+<!-- ![](Figures/eegdata2.pdf){#fig-eeg2} -->
+
+<!-- (a): Exploratory SSEP Amplitude Spectra Across Conditions for electrodes of interest (FCZ & FPZ). Shading shows standard error. (b): Exploratory SSEP Amplitudes Across Conditions. Box plots show means, medians and inter-quartile ranges of data. Medians are indicated with a horizontal line whilst means are indicated by a black dot. Data points are shown in grey jitter.   -->
+<!-- ::: -->
 
 # Discussion
 
-This study sought to understand both subjective and neural response to resizing illusions in participants without chronic pain conditions, to provide not only a greater understanding of how bodily illusions affect cortical representations, but also a basis for investigating differences in cortical representations between participants with and without chronic pain conditions when using resizing illusions for analgesic treatment. Subjective data replicated previous findings of greater subjective illusory experience in multisensory compared to non-illusion conditions, showing that the addition of vibrotactile stimulation does not appear to impact subjective experience of resizing illusions using augmented reality. EEG data showed a significant effect of condition when assessing SSEP amplitudes across the electrodes of interest (F1 & FC1) at 26Hz, with illusory conditions showing reduced median amplitudes compared to non-illusion conditions, however post-hoc comparisons did not survive correction for multiple comparisons. There was no significant difference between median amplitudes from the non-illusion condition compared to the non-illusion tactile condition across the electrodes of interest as predicted. Exploratory analyses across electrodes with the greatest stimulation response showed, although non-significant, a decreased median amplitude in the non-illusion tactile condition compared to the non-illusion condition. These findings, therefore, demonstrate that both illusory resizing and tactile input can lead to reductions in SSEP amplitude, but a larger sample size would likely be needed to detect any significant differences in post hoc comparisons due to the small effect sizes found.
+This study sought to understand both subjective and neural responses to resizing illusions in participants without chronic pain, to provide not only a greater understanding of how bodily illusions affect cortical representations, but also a basis for investigating differences in cortical representations between participants with and without chronic pain conditions when using resizing illusions for analgesic treatment. Subjective data replicated previous findings of greater subjective illusory experience in multisensory compared to non-illusion conditions, showing that the addition of vibrotactile stimulation does not appear to impact subjective experience of resizing illusions using augmented reality, since these effects replicate ones found previously without vibrotactile stimulation. EEG data showed no significant effect of condition when assessing SSEP amplitudes across the electrodes of interest (F1 & FC1) at 26Hz. Exploratory non-parametric analyses of SSEP amplitudes showed a significant effect of condition however, with a decreased median amplitude in the multisensory and unimodal visual conditions compared to the non-illusion condition. However, these differences did not reach statistical significant with exploratory post hoc tests. These findings, therefore, demonstrate that within exploratory analyses illusory resizing can lead to reductions in SSEP amplitude, but this finding would need to be replicated as a confirmatory analysis and a larger sample size would likely be needed to detect any significant differences in post hoc comparisons due to the small effect sizes found.
 
-Whilst the subjective illusory experience data supported the positive control hypothesis of the multisensory condition providing greater illusory experience than either of the non-illusion conditions, the unimodal-visual condition demonstrated a significantly reduced experience of the illusion compared to the multisensory condition. This reduction in illusory experience for the unimodal visual condition compared to the multisensory condition was also found in our previous work [@hansford2023a], and similarly shows a more diverse range of responses compared to the multisensory condition. These findings reinforce the idea that not everyone experiences resizing illusions with only visual stimuli, and this should be considered when assessing the application of resizing illusions to chronic pain samples, as if subjective experience of the illusion is required for analgesic effects, then it is possible that not everyone will experience this from a unimodal visual presentation. Exploratory data looking at disownership of the digit during illusory resizing found significantly greater experiences of disownership in the unimodal visual condition compared to the multisensory, non-illusion, and non-illusion tactile conditions. This heightened disownership might also explain the reduced illusory experience in the unimodal visual condition, as it could be that the presence of tactile input is needed during illusory resizing to ground the digit within the augmented reality system, otherwise feelings of disownership can arise. 
+Whilst the subjective illusory experience data supported the positive control hypothesis of the multisensory condition providing greater illusory experience than either of the non-illusion conditions, exploratory analyses found that the unimodal-visual condition demonstrated a significantly reduced experience of the illusion compared to the multisensory condition. This reduction in illusory experience for the unimodal visual condition compared to the multisensory condition was also found in our previous work [@hansford2023a], and similarly shows a more diverse range of responses compared to the multisensory condition. These findings reinforce the idea that not everyone experiences resizing illusions with only visual stimuli, and this should be considered when assessing the application of resizing illusions to chronic pain samples, as if subjective experience of the illusion is required for analgesic effects, then it is possible that not everyone will experience this from a unimodal visual presentation. Exploratory data looking at disownership of the digit during illusory resizing found significantly greater experiences of disownership in the unimodal visual condition compared to the multisensory, non-illusion, and non-illusion tactile conditions. This heightened disownership might explain the reduced illusory experience in the unimodal visual condition, as it could be that the presence of tactile input is needed during illusory resizing to ground the digit within the augmented reality system, otherwise feelings of disownership can arise. 
 
-Regarding SSEP data, the reduced amplitudes seen in the illusory conditions could be explained through the somatosensory blurring / sharpening hypothesis [@haggard2013a]. This theory proposes that the somatosensory representation of a body part can be sharpened through improved tactile discrimination and acuity training. This sharpening is thought to represent increased organisation of the somatosensory area responding to the stimuli [@haggard2013a]. Tactile acuity can be increased through simply viewing an enlarged body part [@kennett2001a]. Therefore, it is likely that the enlarged digits created through illusory resizing are sharpening the somatosensory representations of the digits. The reduced amplitudes found in the illusory conditions compared to the non-illusion conditions therefore demonstrate a neural representation of this somatosensory sharpening. 
+Regarding SSEP data, the reduced amplitudes seen in the illusory conditions could be explained through the somatosensory blurring / sharpening hypothesis [@haggard2013a]. This theory proposes that the somatosensory representation of a body part can be sharpened through improved tactile discrimination and acuity training. This sharpening is thought to represent increased organisation of the somatosensory area responding to the stimuli [@haggard2013a]. Tactile acuity can be increased through simply viewing an enlarged body part [@kennett2001a]. Therefore, it is likely that the enlarged digits created through illusory resizing are sharpening the somatosensory representations of the digits. The reduced amplitudes found in the illusory conditions compared to the non-illusion conditions therefore demonstrate a neural representation of this somatosensory sharpening. However, since these differences were not found to be significant through confirmatory analyses or exploratory post hoc tests, it is likely that for people without chronic pain there are not clear changes in SSEP response during illusory resizing. 
 
-Exploratory analyses of the electrodes with the greatest response to the 26Hz stimulation extended our confirmatory findings to show that the non-illusion tactile condition also produced a reduced median amplitude compared to the non-illusion condition. This finding, although non-significant, highlights that the somatosensory sharpening effect might not be restricted to illusory manipulations. A possible explanation for this could be through the direction of attention to the digits in conditions with either tactile or illusory input. However, previous research has found that attending to a specific vibrotactile stimulus can result in an increase, rather than a reduction, in SSEP amplitude [@giabbiconi2004a]. Furthermore, brain computer interfaces (BCIs) are used to intentionally modify a brain signal that can be detected by a computer to manipulate one’s environment, and these are often based on increasing SSEP response amplitudes through directing attention [@muller-putz2006a]. Therefore, it is unlikely that the reduction in SSEP amplitudes seen here are due to increased attention in tactile and illusory manipulation conditions. It is possible though, that if somatosensory sharpening is occurring, the reduction in amplitude associated with this could be confounded by this attentional effect, with somatosensory sharpening reducing amplitudes whilst attention is increasing the amplitudes, resulting in the small effect sizes we see in this dataset. Due to these small effect sizes, replication of these effects in larger samples might be better able to assess somatosensory sharpening or attentional effects, as here the sample size was only powered to detect at least medium effects. 
+A possible explanation for the SSEP resuctions found could be through the direction of attention to the digits in illusory conditions. However, previous research has found that attending to a specific vibrotactile stimulus can result in an increase, rather than a reduction, in SSEP amplitude [@giabbiconi2004a]. Furthermore, brain computer interfaces (BCIs) are used to intentionally modify a brain signal that can be detected by a computer to manipulate one’s environment, and these are often based on increasing SSEP response amplitudes through directing attention [@muller-putz2006a]. Therefore, it is unlikely that the reduction in SSEP amplitudes seen here are due to increased attention in tactile and illusory manipulation conditions. It is possible though, that if somatosensory sharpening is occurring, the reduction in amplitude associated with this could be confounded by this attentional effect, with somatosensory sharpening reducing amplitudes whilst attention is increasing the amplitudes, resulting in the small effect sizes we see in this dataset. Due to these small effect sizes, replication of these effects in larger samples might be better able to assess somatosensory sharpening or attentional effects, as here the sample size was only powered to detect at least medium effects. 
 
-Further exploratory analyses assessed correlations between subjective illusory experience and SSEP amplitude across electrodes of interest (F1 & FC1) and found no significant correlations for any condition. These findings could mean that subjective experience of the illusion is not required for there to be changes in cortical responses. When considering resizing illusions as a non-pharmaceutical method for pain reduction, this could mean that patients do not need to subjectively experience resizing illusions for there to be the potential of analgesia. Future research is needed to consolidate this hypothesis, as it is not known if this finding would replicate in samples with chronic pain.
+Further exploratory analyses assessed correlations between subjective illusory experience and SSEP amplitude across electrodes of interest and found no significant correlations for any condition. These findings could indicate that subjective experience of the illusion is not required for there to be changes in cortical responses, although without clear support for changes in SSEP amplitudes found within the confirmatory analyses, this suggestion cannot be empirically justified. It is possible that SSEP amplitudes are too noisy to show such somatosensory changes, or that the sample needed to detect these effects would have to be larger than the one in the present study. However, when considering resizing illusions as a non-pharmaceutical method for pain reduction, a lack of correlation between SSEP amplitude and illusory experience could mean that patients do not need to subjectively experience resizing illusions for there to be the potential of illusory analgesia. Future research is needed to consolidate both this hypothesis and the exploratory correlational findings from the present study.
 
 One of the main aims of the present study was to provide a basis for investigating somatosensory representations of illusory resizing in samples with hand-based chronic pain. Illusory resizing has been found to provide analgesic effects for hand-based chronic pain [@preston2011a], however the neural underpinnings of this analgesia remain undefined. Since chronic pain is thought to create blurred somatosensory representations of the painful body part [@haggard2013a], it is possible that when comparing the results seen here in participants without chronic pain to a sample of participants with chronic pain, the differences between amplitudes in the non-illusion and illusion conditions could be greater, due to more blurred initial representations of the painful digits. If somatosensory response changes are found in a sample with chronic pain, then these changes could underscore the analgesia experienced after illusory resizing, however if these changes are either not seen or do not align with pain reduction, then alternate mechanisms are likely behind illusory resizing analgesia. 
 
-
 # Conclusions
 
-The present study enhances our understanding of the cortical changes associated with illusory resizing and provides an empirical basis for later investigations of somatosensory response changes in a sample with chronic pain. The subjective data suggest that vibrotactile stimulation does not affect experience of resizing illusions, and therefore highlights the suitability of this method for eliciting somatosensory steady state evoked potentials in future investigations. SSEP data also show trends toward supporting the somatosensory blurring / sharpening hypothesis, with reduced amplitudes seen in both illusory and tactile conditions compared to the non-illusion condition. If similar reductions are observed in a sample with chronic hand-based pain, then it would be possible to assume that these neural response changes could be driving illusory analgesia. 
+The present study enhances our understanding of whether there are cortical changes associated with illusory resizing in people without chronic pain and provides an empirical basis for later investigations of somatosensory response changes in a sample with chronic pain. The subjective data suggest that vibrotactile stimulation does not affect experience of resizing illusions, and therefore highlights the suitability of this method for eliciting somatosensory steady state evoked potentials in future investigations. SSEP data also show trends toward supporting the somatosensory blurring / sharpening hypothesis, with reduced amplitudes seen in both illusory conditions compared to the non-illusion conditions. If similar reductions are observed in a sample with chronic hand-based pain, then it would be possible to assume that these neural response changes could be driving illusory analgesia.
 
 {{< pagebreak >}}
 
@@ -1496,7 +1537,7 @@ Pilot data were collected for 3 healthy participants. Participants underwent the
 
 As can be seen in Figure 8, there was a clear somatosensory SSEP response at 26Hz, which was strongest around electrodes F1 and FC1. Previous research using vibrotactile stimulation at 21Hz have also found the scalp topography of the activation to be most pronounced over mid-frontal distributions (Porcu et al., 2014; Timora & Budd, 2018), in line with the scalp topography seen here. Given these finding of a distinct 26Hz signal and mid-frontal scalp location, it appeared appropriate for 26Hz to be used as the vibration frequency in the current study. 
 
-![Averaged Pilot Data showing peak frequency at 26Hz, centred between electrodes F1 and FC1. The spectrum is derived from electrode FC1. Saturation bar represents signal to noise ratio (SNR).](Figures/Pilot Data 2.png){width=50%, height=50%}
+![Averaged Pilot Data showing peak frequency at 26Hz, centred between electrodes F1 and FC1. The spectrum is derived from electrode FC1. Saturation bar represents signal to noise ratio (SNR). SNR is a measure of signal quality and describes the ratio of signal power (at 26Hz) to noise power (averaged across 10 adjacent frequency bins). SNR was used for the pilot figure because with a small sample (3 participants) we did not want a noisy electrode to influence the electrodes chosen as electrodes of interest.](Figures/Pilot Data 2.png){width=50%, height=50%}
 
 {{< pagebreak >}}
 
@@ -1506,21 +1547,21 @@ Pilot data were also collected using the vibrotactile stimulator at 26Hz to make
 
 {{< pagebreak >}}
 
-Exploratory analyses of the subjective disownership data using a Friedman test found a significant overall effect of condition with a small effect size ($\chi^2$(`r round(res.fried_disownership$df[1],digits = 2)`) = `r round(res.fried_disownership$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_disownership$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_disownership$effsize[1],digits = 2)`) and post hoc Wilcoxon tests with Holm corrections found significantly greater combined disownership score in the UV condition (M = `r round(disownershipmsds$median[4],digits = 2)`, SD = `r round(disownershipmsds$sd[4],digits = 2)`) compared to the NI (M = `r round(disownershipmsds$median[1],digits = 2)`, SD = `r round(disownershipmsds$sd[1],digits = 2)`, *p* = `r format.pval(nppwc_disownership$p.adj[3], digits = 1, eps = 0.001, nsmall = 3)`), NIT (M = `r round(disownershipmsds$median[2],digits = 2)`, SD = `r round(disownershipmsds$sd[2],digits = 2)`, *p* = `r format.pval(nppwc_disownership$p.adj[5], digits = 1, eps = 0.001, nsmall = 3)`), and MS conditions, (M = `r round(disownershipmsds$median[3],digits = 2)`, SD = `r round(disownershipmsds$sd[3],digits = 2)`, *p* = `r format.pval(nppwc_disownership$p.adj[6], digits = 1, eps = 0.001, nsmall = 3)`).
+Exploratory analyses of the subjective disownership data using a Friedman test found a significant overall effect of condition with a small effect size ($\chi^2$(`r round(res.fried_disownership$df[1],digits = 2)`) = `r round(res.fried_disownership$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_disownership$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_disownership$effsize[1],digits = 2)`) and post hoc Wilcoxon tests with Holm corrections found significantly greater combined disownership score in the UV condition (Median = `r round(disownershipmsds$median[4],digits = 2)`, SD = `r round(disownershipmsds$sd[4],digits = 2)`) compared to the NI (Median = `r round(disownershipmsds$median[1],digits = 2)`, SD = `r round(disownershipmsds$sd[1],digits = 2)`, *z* = `r round(nppwc_disownership$statistic[3], digits = 2)`, *p.adj* = `r format.pval(nppwc_disownership$p.adj[3], digits = 1, eps = 0.001, nsmall = 3)`, *r* = `r round(nppwc_disownership$estimate[3], digits = 2)`), NIT (M = `r round(disownershipmsds$median[2],digits = 2)`, SD = `r round(disownershipmsds$sd[2],digits = 2)`, *z* = `r round(nppwc_disownership$statistic[5], digits = 2)`, *p.adj* = `r format.pval(nppwc_disownership$p.adj[5], digits = 1, eps = 0.001, nsmall = 3)`, *r* = `r round(nppwc_disownership$estimate[5], digits = 2)`), and MS conditions, (Median = `r round(disownershipmsds$median[3],digits = 2)`, SD = `r round(disownershipmsds$sd[3],digits = 2)`, *z* = `r round(nppwc_disownership$statistic[6], digits = 2)`, *p.adj* = `r format.pval(nppwc_disownership$p.adj[6], digits = 1, eps = 0.001, nsmall = 3)`, *r* = `r round(nppwc_disownership$estimate[6], digits = 2)`).
 
-![Combined Disownership Scores Across Conditions. Scores below 50 indicate disagreement with experience of disownership statements, whilst scores above 50 indicate agreement. Box plots show medians and inter-quartile ranges of data. Data points are shown in grey jitter. ](Figures/disownershipdata.pdf){#fig-disownership}
+![Combined Disownership Score Index Across Conditions (NI: Non-Illusion; NIT: Non-Illusion Tactile; MS: Multisensory; UV: Unimodal Visual). Scores below 50 indicate disagreement with experience of disownership statements, whilst scores above 50 indicate agreement. A continuous visual analogue scale was used in data collection, with agreement and disagreement statements located at each end of the scale. Box plots show means, medians and inter-quartile ranges of data. Medians are indicated with a horizontal line whilst means are indicated by a black dot. Data points are shown in grey jitter binned along the y-axis, grouped by condition. ](Figures/disownershipdata.pdf){#fig-disownership}
 
 {{< pagebreak >}}
 
-Exploratory analyses of the subjective control data using a Friedman test found a significant overall effect of condition with a small effect size ($\chi^2$(`r round(res.fried_control$df[1],digits = 2)`) = `r round(res.fried_control$statistic[1],digits = 2)`, *p* = `r format.pval(res.fried_control$p[1], digits = 1, eps = 0.001, nsmall = 3)`, Kendall’s W = `r round(effectsize_control$effsize[1],digits = 2)`) however post hoc Wilcoxon tests with Holm corrections found no significant differences between combined control scores across any conditions: NI (M = `r round(controlmsds$median[1],digits = 2)`, SD = `r round(controlmsds$sd[1],digits = 2)`), NIT (M = `r round(controlmsds$median[2],digits = 2)`, SD = `r round(controlmsds$sd[2],digits = 2)`, MS (M = `r round(controlmsds$median[3],digits = 2)`, SD = `r round(controlmsds$sd[3],digits = 2)`), UV (M = `r round(controlmsds$median[4],digits = 2)`, SD = `r round(controlmsds$sd[4],digits = 2)`).
+Exploratory analyses of the subjective control data using a Kruskall-Wallis test (due to multiple ties) found no significant overall effect of condition  ($\chi^2$(`r round(kruskall.wallis$parameter[1],digits = 2)`) = `r round(kruskall.wallis$statistic[1],digits = 2)`, *p* = `r format.pval(kruskall.wallis$p.value[1], digits = 1, eps = 0.001, nsmall = 3)`) and post hoc Dunn's tests with Bonferroni corrections found no significant differences between combined control scores when comparing the NI condition (Median = `r round(controlmsds$median[1],digits = 2)`, SD = `r round(controlmsds$sd[1],digits = 2)`) to the NIT condition (Median = `r round(controlmsds$median[2],digits = 2)`, SD = `r round(controlmsds$sd[2],digits = 2)`, *z* = `r round(nppwc_controlD$res$Z[3], digits = 2)`, *p.adj* = `r format.pval(nppwc_controlD$res$P.adj[3], digits = 1, eps = 0.001, nsmall = 3)`), or the MS (Median = `r round(controlmsds$median[3],digits = 2)`, SD = `r round(controlmsds$sd[3],digits = 2)`, *z* = `r round(nppwc_controlD$res$Z[1], digits = 2)`, *p.adj* = `r format.pval(nppwc_controlD$res$P.adj[1], digits = 1, eps = 0.001, nsmall = 3)`), or UV conditions (Median = `r round(controlmsds$median[4],digits = 2)`, SD = `r round(controlmsds$sd[4],digits = 2)`, *z* = `r round(nppwc_controlD$res$Z[5], digits = 2)`, *p.adj* = `r format.pval(nppwc_controlD$res$P.adj[5], digits = 1, eps = 0.001, nsmall = 3)`).
 
-![Combined Control Scores Across Conditions. Scores below 50 indicate disagreement with experience of control statements, whilst scores above 50 indicate agreement. Box plots show medians and inter-quartile ranges of data. Data points are shown in grey jitter. ](Figures/controldata.pdf){#fig-control}
+![Combined Control Scores Across Conditions (NI: Non-Illusion; NIT: Non-Illusion Tactile; MS: Multisensory; UV: Unimodal Visual). Scores below 50 indicate disagreement with experience of control statements, whilst scores above 50 indicate agreement. A continuous visual analogue scale was used in data collection, with agreement and disagreement statements located at each end of the scale. Box plots show means, medians and inter-quartile ranges of data. Medians are indicated with a horizontal line whilst means are indicated by a black dot. Data points are shown in grey jitter binned along the y-axis, grouped by condition. ](Figures/controldata.pdf){#fig-control}
 
 {{< pagebreak >}}
 
 Spearman’s correlations were run to identify any correlations between participant’s illusion score and their SSEP amplitude across electrodes of interest (F1 & FC1) for each condition found no significant correlations across conditions.
 
-![Correlation Between Amplitude and Subjective Illusory Score for Each Condition.](Figures/correlationdata.pdf){#fig-correlation}
+![Correlation Between Amplitude and Subjective Illusory Score for Each Condition (NI: Non-Illusion; NIT: Non-Illusion Tactile; MS: Multisensory; UV: Unimodal Visual).](Figures/correlationdata.pdf){#fig-correlation}
 
 {{< pagebreak >}}
 
