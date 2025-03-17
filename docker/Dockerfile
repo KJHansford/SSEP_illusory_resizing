@@ -30,4 +30,6 @@ rstatix \
 moments \
 tiff \
 tinytex \
-osfr
+osfr \
+FSA \
+compute.es
