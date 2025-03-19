@@ -652,10 +652,8 @@ channames <- np$load('local/channames.npy')
 eegdata_exp <- np$load('local/amplitudes2.npy')
 
 #make eegdata dataframes
-eegdata <- data.frame(as.matrix(eegdata))
-eegdata_exp <- data.frame(as.matrix(eegdata_exp))
-colnames(eegdata) <- c('V1','V2','V3','V4')
-colnames(eegdata_exp) <- c('V1','V2','V3','V4')
+eegdata <- as.data.frame(eegdata)
+eegdata_exp <- as.data.frame(eegdata_exp)
 
 #add PID column
 PID = (1:46)
