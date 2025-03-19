@@ -35,13 +35,15 @@ invisible(lapply(toinstall,library,character.only=TRUE))
 # if (!is_tinytex()){install_tinytex()}
 
 # create python environment and install packages
-  # # if (processdata==1){
-  # install_miniconda()
-  # use_miniconda('r-reticulate')
-  # # install_python(version="3.10")
-  # py_install(c('mne', 'numpy', 'scikit-learn', 'matplotlib', 'pandas', 'openpyxl'))
-  # # }
-# use_python("/usr/bin/python3.10")
+OS <- Sys.info()['sysname']
+if (OS=='Linux'){use_python("/usr/bin/python3.10")}
+if (OS!='Linux'){
+  install_miniconda()
+  use_miniconda('r-reticulate')
+  # install_python(version="3.10")
+  py_install(c('mne', 'numpy', 'scikit-learn', 'matplotlib', 'pandas', 'openpyxl'))
+}
+
 
 # check for local files and directories and create/download if missing
 if (!dir.exists('local')){dir.create('local')}
