@@ -26,7 +26,7 @@ processdata <- 0
 
 
 # install R packages
-packagelist <- c('tidyverse','ggpubr','ez','ggplot2','jpeg','grid','plotrix','lavaan', 'cowplot', 'ggpubr','rstatix','reticulate','moments','tiff','rmarkdown','tinytex','osfr','FSA','compute.es')  
+packagelist <- c('tidyverse','ggpubr','ez','ggplot2','jpeg','grid','plotrix','lavaan', 'cowplot', 'ggpubr','rstatix','reticulate','moments','tiff','rmarkdown','tinytex','osfr','FSA','compute.es','coin')  
 missingpackages <- packagelist[!packagelist %in% installed.packages()[,1]]
 if (length(missingpackages)>0){install.packages(missingpackages)}
 toinstall <- packagelist[which(!packagelist %in% (.packages()))]
@@ -41,7 +41,7 @@ invisible(lapply(toinstall,library,character.only=TRUE))
   # # install_python(version="3.10")
   # py_install(c('mne', 'numpy', 'scikit-learn', 'matplotlib', 'pandas', 'openpyxl'))
   # # }
-use_python("/usr/bin/python3.10")
+# use_python("/usr/bin/python3.10")
 
 # check for local files and directories and create/download if missing
 if (!dir.exists('local')){dir.create('local')}
@@ -72,49 +72,49 @@ if (processdata==1){
 
 if (!file.exists('local/subjective data.csv')){
   osfproject <- osf_retrieve_node("edqf5")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='subjective data.csv')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/handedness.csv')){
   osfproject <- osf_retrieve_node("edqf5")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='handedness.csv')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/demographics.csv')){
   osfproject <- osf_retrieve_node("edqf5")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='demographics.csv')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/Allfspec.npy')){
   osfproject <- osf_retrieve_node("h3fbq")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='Allfspec.npy')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/amplitudes1.npy')){
   osfproject <- osf_retrieve_node("h3fbq")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='amplitudes1.npy')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/amplitudes2.npy')){
   osfproject <- osf_retrieve_node("h3fbq")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='amplitudes2.npy')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/channames.npy')){
   osfproject <- osf_retrieve_node("h3fbq")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='channames.npy')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
@@ -122,36 +122,57 @@ if (!file.exists('local/channames.npy')){
 
 if (!file.exists('references-rr.bib')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='references-rr.bib')
   osf_download(osffiles[fid,], progress=TRUE)
 }
 
 if (!file.exists('local/montage.csv')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='montage.csv')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Augmented Reality System.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='Augmented Reality System.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Conditions.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='Conditions.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Pilot Data.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject)
+  osffiles <- osf_ls_files(osfproject,n_max=20)
   fid <- which(osffiles$name=='Pilot Data.png')
+  osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
+}
+
+if (!file.exists('Figures/Pilot Data 2.png')){
+  osfproject <- osf_retrieve_node("wfu7j")
+  osffiles <- osf_ls_files(osfproject,n_max=20)
+  fid <- which(osffiles$name=='Pilot Data 2.png')
+  osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
+}
+
+if (!file.exists('Figures/Pilot Data 3.png')){
+  osfproject <- osf_retrieve_node("wfu7j")
+  osffiles <- osf_ls_files(osfproject,n_max=20)
+  fid <- which(osffiles$name=='Pilot Data 3.png')
+  osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
+}
+
+if (!file.exists('Figures/Hypotheses Schematic.png')){
+  osfproject <- osf_retrieve_node("wfu7j")
+  osffiles <- osf_ls_files(osfproject,n_max=20)
+  fid <- which(osffiles$name=='Hypotheses Schematic.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
@@ -629,8 +650,10 @@ channames <- np$load('local/channames.npy')
 eegdata_exp <- np$load('local/amplitudes2.npy')
 
 #make eegdata dataframes
-eegdata <- as.data.frame(eegdata)
-eegdata_exp <- as.data.frame(eegdata_exp)
+eegdata <- data.frame(eegdata)
+eegdata_exp <- data.frame(eegdata_exp)
+colnames(eegdata) <- c('V1','V2','V3','V4')
+colnames(eegdata_exp) <- c('V1','V2','V3','V4')
 
 #add PID column
 PID = (1:46)
@@ -747,22 +770,22 @@ eegUVNIes <- tes(1.15,46,46)
 eegNINITes <- tes(2.02,46,46)
 
 #non-parametric test
-res.fried_eeg1 <- eegdata_2 %>% friedman_test(Amplitude ~ Condition |PID)
-effectsize_eeg1 <- eegdata_2 %>% friedman_effsize(Amplitude ~ Condition |PID)
+res.fried_eeg1 <- eegdata_2 %>% rstatix::friedman_test(Amplitude ~ Condition |PID)
+effectsize_eeg1 <- eegdata_2 %>% rstatix::friedman_effsize(Amplitude ~ Condition |PID)
 
-res.fried_eeg2 <- eegdata_exp2 %>% friedman_test(Amplitude ~ Condition |PID)
-effectsize_eeg2 <- eegdata_exp2 %>% friedman_effsize(Amplitude ~ Condition |PID)
+res.fried_eeg2 <- eegdata_exp2 %>% rstatix::friedman_test(Amplitude ~ Condition |PID)
+effectsize_eeg2 <- eegdata_exp2 %>% rstatix::friedman_effsize(Amplitude ~ Condition |PID)
 
 #posthoc tests
 nppwc_eeg1 <- eegdata_2 %>%
-  wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
+  rstatix::wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
     detailed = TRUE)
 
 nppwc_eeg1_es <- eegdata_2 %>%
   wilcox_effsize(Amplitude ~ Condition, paired = TRUE,comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")))
 
 nppwc2_eeg2 <- eegdata_exp2 %>%
-  wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
+  rstatix::wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
     detailed = TRUE)
 
 ```
@@ -1159,12 +1182,12 @@ MSNIes <- tes(-5.67,46,46)
 MSNITes <- tes(-5.61,46,46)
 
 #non-parametric tests
-res.fried_illusion <- subjecitve_data_illusion_1 %>% friedman_test(Score ~ Condition |PID)
-effectsize_illusion <- subjecitve_data_illusion_1 %>% friedman_effsize(Score ~ Condition |PID)
+res.fried_illusion <- subjecitve_data_illusion_1 %>% rstatix::friedman_test(Score ~ Condition |PID)
+effectsize_illusion <- subjecitve_data_illusion_1 %>% rstatix::friedman_effsize(Score ~ Condition |PID)
 
 #posthoc tests
 nppwc_illusion <- subjecitve_data_illusion_1 %>%
-  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
+  rstatix::wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
     detailed = TRUE)
 
 nppwc_illusion_es <- subjecitve_data_illusion_1 %>%
@@ -1243,12 +1266,12 @@ disownershipmsds
 #   )
 
 #non-parametric tests
-res.fried_disownership <- subjecitve_data_disownership_1 %>% friedman_test(Score ~ Condition |PID)
-effectsize_disownership <- subjecitve_data_disownership_1 %>% friedman_effsize(Score ~ Condition |PID)
+res.fried_disownership <- subjecitve_data_disownership_1 %>% rstatix::friedman_test(Score ~ Condition |PID)
+effectsize_disownership <- subjecitve_data_disownership_1 %>% rstatix::friedman_effsize(Score ~ Condition |PID)
 
 #posthoc tests
 nppwc_disownership <- subjecitve_data_disownership_1 %>%
-  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
+  rstatix::wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
     detailed = TRUE)
 
 nppwc_disownership_es <- subjecitve_data_disownership_1 %>%

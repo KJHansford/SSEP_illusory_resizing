@@ -39,4 +39,5 @@ tiff \
 tinytex \
 osfr \
 FSA \
-compute.es
+compute.es \
+coin
