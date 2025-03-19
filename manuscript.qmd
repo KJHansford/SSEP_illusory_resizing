@@ -32,7 +32,7 @@ if (length(missingpackages)>0){install.packages(missingpackages)}
 toinstall <- packagelist[which(!packagelist %in% (.packages()))]
 invisible(lapply(toinstall,library,character.only=TRUE))
 
-# if (!is_tinytex()){install_tinytex()}
+if (!is_tinytex()){install_tinytex()}
 
 # create python environment and install packages
 OS <- Sys.info()['sysname']
