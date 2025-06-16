@@ -74,49 +74,49 @@ if (processdata==1){
 
 if (!file.exists('local/subjective data.csv')){
   osfproject <- osf_retrieve_node("edqf5")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='subjective data.csv')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/handedness.csv')){
   osfproject <- osf_retrieve_node("edqf5")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='handedness.csv')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/demographics.csv')){
   osfproject <- osf_retrieve_node("edqf5")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='demographics.csv')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/Allfspec.npy')){
   osfproject <- osf_retrieve_node("h3fbq")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='Allfspec.npy')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/amplitudes1.npy')){
   osfproject <- osf_retrieve_node("h3fbq")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='amplitudes1.npy')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/amplitudes2.npy')){
   osfproject <- osf_retrieve_node("h3fbq")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='amplitudes2.npy')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('local/channames.npy')){
   osfproject <- osf_retrieve_node("h3fbq")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='channames.npy')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
@@ -124,56 +124,56 @@ if (!file.exists('local/channames.npy')){
 
 if (!file.exists('references-rr.bib')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='references-rr.bib')
   osf_download(osffiles[fid,], progress=TRUE)
 }
 
 if (!file.exists('local/montage.csv')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='montage.csv')
   osf_download(osffiles[fid,], path='local/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Augmented Reality System.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='Augmented Reality System.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Conditions.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='Conditions.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Pilot Data.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='Pilot Data.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Pilot Data 2.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='Pilot Data 2.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Pilot Data 3.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='Pilot Data 3.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
 if (!file.exists('Figures/Hypotheses Schematic.png')){
   osfproject <- osf_retrieve_node("wfu7j")
-  osffiles <- osf_ls_files(osfproject,n_max=20)
+  osffiles <- osf_ls_files(osfproject,n_max=100)
   fid <- which(osffiles$name=='Hypotheses Schematic.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
