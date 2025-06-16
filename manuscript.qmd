@@ -26,7 +26,7 @@ processdata <- 0
 
 
 # install R packages
-packagelist <- c('tidyverse','ggpubr','ez','ggplot2','jpeg','grid','plotrix','lavaan', 'cowplot', 'ggpubr','rstatix','reticulate','moments','tiff','rmarkdown','tinytex','osfr','FSA','compute.es')  
+packagelist <- c('tidyverse','ggpubr','ez','ggplot2','jpeg','grid','plotrix','lavaan', 'cowplot', 'ggpubr','rstatix','reticulate','moments','tiff','rmarkdown','tinytex','osfr','FSA','compute.es','coin')  
 missingpackages <- packagelist[!packagelist %in% installed.packages()[,1]]
 if (length(missingpackages)>0){install.packages(missingpackages)}
 toinstall <- packagelist[which(!packagelist %in% (.packages()))]
@@ -151,6 +151,27 @@ if (!file.exists('Figures/Pilot Data.png')){
   osfproject <- osf_retrieve_node("wfu7j")
   osffiles <- osf_ls_files(osfproject)
   fid <- which(osffiles$name=='Pilot Data.png')
+  osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
+}
+
+if (!file.exists('Figures/Pilot Data 2.png')){
+  osfproject <- osf_retrieve_node("wfu7j")
+  osffiles <- osf_ls_files(osfproject,n_max=20)
+  fid <- which(osffiles$name=='Pilot Data 2.png')
+  osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
+}
+
+if (!file.exists('Figures/Pilot Data 3.png')){
+  osfproject <- osf_retrieve_node("wfu7j")
+  osffiles <- osf_ls_files(osfproject,n_max=20)
+  fid <- which(osffiles$name=='Pilot Data 3.png')
+  osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
+}
+
+if (!file.exists('Figures/Hypotheses Schematic.png')){
+  osfproject <- osf_retrieve_node("wfu7j")
+  osffiles <- osf_ls_files(osfproject,n_max=20)
+  fid <- which(osffiles$name=='Hypotheses Schematic.png')
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
