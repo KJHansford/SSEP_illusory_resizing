@@ -636,7 +636,7 @@ if r.processdata==1:
 
 #install needed package
 #install_miniconda()
-#use_miniconda('r-reticulate')
+# use_miniconda('r-reticulate')
 
 #import numpy
 np <- import('numpy')
@@ -767,22 +767,22 @@ eegUVNIes <- tes(1.15,46,46)
 eegNINITes <- tes(2.02,46,46)
 
 #non-parametric test
-res.fried_eeg1 <- eegdata_2 %>% friedman_test(Amplitude ~ Condition |PID)
-effectsize_eeg1 <- eegdata_2 %>% friedman_effsize(Amplitude ~ Condition |PID)
+res.fried_eeg1 <- eegdata_2 %>% rstatix::friedman_test(Amplitude ~ Condition |PID)
+effectsize_eeg1 <- eegdata_2 %>% rstatix::friedman_effsize(Amplitude ~ Condition |PID)
 
-res.fried_eeg2 <- eegdata_exp2 %>% friedman_test(Amplitude ~ Condition |PID)
-effectsize_eeg2 <- eegdata_exp2 %>% friedman_effsize(Amplitude ~ Condition |PID)
+res.fried_eeg2 <- eegdata_exp2 %>% rstatix::friedman_test(Amplitude ~ Condition |PID)
+effectsize_eeg2 <- eegdata_exp2 %>% rstatix::friedman_effsize(Amplitude ~ Condition |PID)
 
 #posthoc tests
 nppwc_eeg1 <- eegdata_2 %>%
-  wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
+  rstatix::wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
     detailed = TRUE)
 
 nppwc_eeg1_es <- eegdata_2 %>%
   wilcox_effsize(Amplitude ~ Condition, paired = TRUE,comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")))
 
 nppwc2_eeg2 <- eegdata_exp2 %>%
-  wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
+  rstatix::wilcox_test(Amplitude ~ Condition, paired = TRUE, comparisons = list(c("V1", "V3"), c("V1", "V4"), c("V1", "V2")), p.adjust.method = "holm",
     detailed = TRUE)
 
 ```
@@ -1179,12 +1179,12 @@ MSNIes <- tes(-5.67,46,46)
 MSNITes <- tes(-5.61,46,46)
 
 #non-parametric tests
-res.fried_illusion <- subjecitve_data_illusion_1 %>% friedman_test(Score ~ Condition |PID)
-effectsize_illusion <- subjecitve_data_illusion_1 %>% friedman_effsize(Score ~ Condition |PID)
+res.fried_illusion <- subjecitve_data_illusion_1 %>% rstatix::friedman_test(Score ~ Condition |PID)
+effectsize_illusion <- subjecitve_data_illusion_1 %>% rstatix::friedman_effsize(Score ~ Condition |PID)
 
 #posthoc tests
 nppwc_illusion <- subjecitve_data_illusion_1 %>%
-  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
+  rstatix::wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
     detailed = TRUE)
 
 nppwc_illusion_es <- subjecitve_data_illusion_1 %>%
@@ -1263,12 +1263,12 @@ disownershipmsds
 #   )
 
 #non-parametric tests
-res.fried_disownership <- subjecitve_data_disownership_1 %>% friedman_test(Score ~ Condition |PID)
-effectsize_disownership <- subjecitve_data_disownership_1 %>% friedman_effsize(Score ~ Condition |PID)
+res.fried_disownership <- subjecitve_data_disownership_1 %>% rstatix::friedman_test(Score ~ Condition |PID)
+effectsize_disownership <- subjecitve_data_disownership_1 %>% rstatix::friedman_effsize(Score ~ Condition |PID)
 
 #posthoc tests
 nppwc_disownership <- subjecitve_data_disownership_1 %>%
-  wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
+  rstatix::wilcox_test(Score ~ Condition, paired = TRUE, p.adjust.method = "holm",
     detailed = TRUE)
 
 nppwc_disownership_es <- subjecitve_data_disownership_1 %>%
