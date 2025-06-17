@@ -178,6 +178,20 @@ if (!file.exists('Figures/Hypotheses Schematic.png')){
   osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
 }
 
+if (!file.exists('Figures/exploratoryeegdata.png')){
+  osfproject <- osf_retrieve_node("wfu7j")
+  osffiles <- osf_ls_files(osfproject,n_max=100)
+  fid <- which(osffiles$name=='exploratoryeegdata.png')
+  osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
+}
+
+if (!file.exists('Figures/correlationdata.pdf')){
+  osfproject <- osf_retrieve_node("wfu7j")
+  osffiles <- osf_ls_files(osfproject,n_max=100)
+  fid <- which(osffiles$name=='correlationdata.pdf')
+  osf_download(osffiles[fid,], path='Figures/',progress=TRUE)
+}
+
 ```
 
 ```{python SEremoval, include=FALSE}
